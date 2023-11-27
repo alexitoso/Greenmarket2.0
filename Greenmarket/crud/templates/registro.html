@@ -1,0 +1,11 @@
+{% if form.errors %}
+<div class="alert alert-danger">
+    <strong>Error:</strong> Hay problemas con el formulario.
+</div>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Registrarse</button>
+</form>
