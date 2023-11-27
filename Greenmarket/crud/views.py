@@ -1,10 +1,14 @@
 from django.shortcuts import render
 from django.shortcuts import render
 from django.contrib.auth import login, logout, authenticate, get_user_model
-from .forms import RegistroForm
+from .forms import RegistroForm, LoginForm
+
 from django.shortcuts import redirect
 from .models import Usuario
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.hashers import make_password  # Importa make_password
+from django.contrib.auth.decorators import user_passes_test, login_required
+from django.shortcuts import redirect
 
 
 # Create your views here.
@@ -24,9 +28,12 @@ def registro(request):
             password = form.cleaned_data["password"]
             tipo_perfil = form.cleaned_data["tipo_perfil"]
 
-            # Aquí debes crear tu nuevo usuario utilizando el modelo TuModeloDeUsuario
+            # Encripta la contraseña antes de guardarla
+            hashed_password = make_password(password)
+
+            # Crea un nuevo usuario utilizando el modelo TuModeloDeUsuario
             nuevo_usuario = Usuario.objects.create(
-                username=username, password=password, tipo_perfil=tipo_perfil
+                username=username, password=hashed_password, tipo_perfil=tipo_perfil
             )
 
             # Guarda el nuevo usuario en la base de datos
@@ -41,28 +48,19 @@ def registro(request):
 
 
 def iniciosesion(request):
-    if request.method == "GET":
-        return render(request, "login.html", {"form": AuthenticationForm})
-    else:
-        user = authenticate(
-            request,
-            username=request.POST["username"],
-            password=request.POST["password"],
-        )
-        if user is None:
-            return render(
-                request,
-                "home.html",
-                {
-                    "form": AuthenticationForm,
-                    "error": "usuario o contraseña incorrectas",
-                },
-            )
-        else:
-            iniciosesion(request, user)
+    if request.method == "POST":
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            # Autenticación manual
+            user = form.get_user()
+            login(request, user)
             return redirect("home")
+    else:
+        form = LoginForm()
+
+    return render(request, "login.html", {"form": form})
 
 
 def signout(request):
     logout(request)
-    return redirect("home.html")
+    return redirect("home")

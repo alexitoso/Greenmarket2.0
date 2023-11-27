@@ -8,10 +8,28 @@
 </head>
 
 <body>
-    <h3>pato feooooooo</h3>
-    <a href="/login">iniciar sesion</a>
-    <a href="/registro">registrarse</a>
-    <a href="/producto">productos</a>
+
+    <li>
+        <a href="/">
+            <h3>Inicio</h3>
+        </a>
+    </li>
+
+    {% if user.is_authenticated %}
+    <li>
+        <a href="/producto">Productos</a>
+    </li>
+    <li>
+        <a href="/cerrarsesion">Cerrar sesion</a>
+    </li>
+    {% else %}
+    <li>
+        <a href="/iniciosesion">Iniciar sesion</a>
+    </li>
+    <li>
+        <a href="/registro">Registrarse</a>
+    </li>
+    {% endif %}
 </body>
 
 </html>
