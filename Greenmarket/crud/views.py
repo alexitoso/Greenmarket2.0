@@ -2,10 +2,10 @@ from django.contrib import messages
 from django.shortcuts import render
 from django.shortcuts import render
 from django.contrib.auth import login, logout, authenticate, get_user_model
-from .forms import RegistroForm, LoginForm
+from .forms import ClienteForm, ProveedorForm, RegistroForm, LoginForm
 
 from django.shortcuts import redirect
-from .models import Usuario
+from .models import Usuario, Cliente, Proveedor
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.hashers import make_password  # Importa make_password
 from django.contrib.auth.decorators import user_passes_test, login_required
@@ -67,7 +67,7 @@ def iniciosesion(request):
                 request.session["username"] = usuario.username
                 request.session["tipo_perfil"] = usuario.tipo_perfil
 
-                return render(request, "home.html")
+                return render(request, "crearperfil.html")
             else:
                 messages.error(request, "Nombre de usuario o contraseña incorrectos..!")
         except Usuario.DoesNotExist:
@@ -83,3 +83,49 @@ def signout(request):
 
 def tienda(request):
     return render(request, "tienda.html")
+
+
+@login_required
+def crear_perfil_proveedor(request):
+    if hasattr(request.user, "proveedor"):
+        # Si el usuario ya tiene un perfil de proveedor, redirigir a otra página
+        return redirect("home")
+
+    if request.method == "POST":
+        # Procesar el formulario de creación de perfil de proveedor
+        form = ProveedorForm(request.POST)
+        if form.is_valid():
+            nuevo_proveedor = form.save(commit=False)
+            nuevo_proveedor.id_usuario = request.user
+            nuevo_proveedor.save()
+        return redirect(
+            "home"
+        )  # Redirigir a otra página después de crear el perfil de proveedor
+
+    return render(
+        request, "crearperfil.html", {"form": form}
+    )  # Renderizar el formulario de creación de perfil de proveedor
+
+
+@login_required
+def crear_perfil_cliente(request):
+    if hasattr(request.user, "cliente"):
+        # Si el usuario ya tiene un perfil de cliente, redirigir a otra página
+        return redirect("otra_pagina")
+
+    if request.method == "POST":
+        # Procesar el formulario de creación de perfil de cliente
+        form = ClienteForm(request.POST)
+        if form.is_valid():
+            nuevo_cliente = form.save(commit=False)
+            nuevo_cliente.id_usuario = request.user
+            nuevo_cliente.save()
+            # Otros campos del formulario
+        return redirect(
+            "home"
+        )  # Redirigir a otra página después de crear el perfil de cliente
+    else:
+        form = ClienteForm()
+    return render(
+        request, "crearperfil.html", {"form": form}
+    )  # Renderizar el formulario de creación de perfil de cliente

@@ -41,3 +41,19 @@ class LoginForm(AuthenticationForm):
             if self.user_cache is None or not self.user_cache.is_active:
                 raise forms.ValidationError("Credenciales inválidas")
         return self.cleaned_data
+
+
+# intento 1
+from .models import Proveedor, Cliente
+
+
+class ProveedorForm(forms.ModelForm):
+    class Meta:
+        model = Proveedor
+        fields = "__all__"  # Puedes especificar los campos si no quieres todos
+
+
+class ClienteForm(forms.ModelForm):
+    class Meta:
+        model = Cliente
+        fields = "__all__"  # Puedes especificar los campos si no quieres todos

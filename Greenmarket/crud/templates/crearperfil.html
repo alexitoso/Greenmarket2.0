@@ -1,0 +1,16 @@
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    {% if request.session.tipo_perfil == 'proveedor' %}
+    <!-- Si es un formulario de proveedor -->
+    <p>Este es un formulario para proveedores.</p>
+    <!-- Agrega aquí contenido específico para el formulario de proveedor -->
+    {% else %}
+    <!-- Si es un formulario de cliente -->
+    <p>Este es un formulario para clientes.</p>
+    <!-- Agrega aquí contenido específico para el formulario de cliente -->
+    {% endif %}
+
+    <button type="submit">Guardar</button>
+</form>

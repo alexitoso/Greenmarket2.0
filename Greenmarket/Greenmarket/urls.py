@@ -26,4 +26,12 @@ urlpatterns = [
     path("producto", views.producto, name="producto"),
     path("tienda/", views.tienda, name="tienda"),
     path("cerrarsesion/", views.signout, name="cerrarsesion"),
+    path(
+        "crearperfil-proveedor/",
+        views.crear_perfil_proveedor,
+        name="crearperfil_proveedor",
+    ),
+    path(
+        "crearperfil-cliente/", views.crear_perfil_cliente, name="crearperfil_cliente"
+    ),
 ]
