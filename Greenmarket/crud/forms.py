@@ -44,7 +44,7 @@ class LoginForm(AuthenticationForm):
 
 
 # intento 1
-from .models import Proveedor, Cliente
+from .models import Comuna, Proveedor, Cliente
 
 
 class ProveedorForm(forms.ModelForm):

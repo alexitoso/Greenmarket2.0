@@ -131,6 +131,7 @@ def crear_perfil_cliente(request):
     )  # Renderizar el formulario de creación de perfil de cliente
 
 
-def comunas(request):
+def mostrar_comunas(request):
     comunas = Comuna.objects.all()
+    print(comunas)
     return render(request, "crearperfil.html", {"comunas": comunas})

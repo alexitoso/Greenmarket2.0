@@ -4,20 +4,23 @@
 
     {% if request.session.tipo_perfil == 'proveedor' %}
     <tr>
-        <td>Ingrese su rut sin digito verificador</td>
-        <td><input type="number" placeholder="12345678" name="rut_proveedor" unique required></td>
+        <td>Ingrese su rut </td>
+        <td><input type="text" id="rutInput" maxlength="8" placeholder="Ingresa el RUT sin dv" unique>
+
+        </td>
     </tr>
     <tr>
-        <td>Ingrese su digito verificador</td>
-        <td><input type="text" name="dv_proveedor" required placeholder="k"></td>
+        <td>-</td>
+        <td><input type="text" name="dv_proveedor" required placeholder="k" size="1" maxlength="1"></td>
     </tr>
     <tr>
-        <label for="id_comuna">Comuna:</label>
-        <select id="id_comuna" name="id_comuna" required>
-            <option value="">Selecciona una comuna</option> <!-- Opción inicial vacía o de selección por defecto -->
-            {% for Comuna in Comunas %}
-            <option value="{{ comuna.id_comuna }}"> {{ comuna.comuna.descripcion }} </option>
-            <!-- 'comuna.id' es el valor que se enviará al formulario, 'comuna.nombre' es lo que se mostrará -->
+        <!-- tu_plantilla.html -->
+        {{ comunas }}
+
+        <label for="comuna">Selecciona tu comuna:</label>
+        <select id="comuna" name="comuna">
+            {% for comuna in comunas %}
+            <option value="{{ comuna.id }}">{{ comuna.descripcion }}</option>
             {% endfor %}
         </select>
     </tr>
@@ -47,4 +50,5 @@
     {% endif %}
 
     <button type="submit">Guardar</button>
+
 </form>
