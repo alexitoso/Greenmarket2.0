@@ -3,7 +3,41 @@
     {{ form.as_p }}
 
     {% if request.session.tipo_perfil == 'proveedor' %}
-    <!-- Si es un formulario de proveedor -->
+    <tr>
+        <td>Ingrese su rut sin digito verificador</td>
+        <td><input type="number" placeholder="12345678" name="rut_proveedor" unique required></td>
+    </tr>
+    <tr>
+        <td>Ingrese su digito verificador</td>
+        <td><input type="text" name="dv_proveedor" required placeholder="k"></td>
+    </tr>
+    <tr>
+        <label for="id_comuna">Comuna:</label>
+        <select id="id_comuna" name="id_comuna" required>
+            <option value="">Selecciona una comuna</option> <!-- Opción inicial vacía o de selección por defecto -->
+            {% for Comuna in Comunas %}
+            <option value="{{ comuna.id_comuna }}"> {{ comuna.comuna.descripcion }} </option>
+            <!-- 'comuna.id' es el valor que se enviará al formulario, 'comuna.nombre' es lo que se mostrará -->
+            {% endfor %}
+        </select>
+    </tr>
+    <!-- <tr>
+        <td>Ingrese su nombre de usuario</td>
+        <td><input type="text" name="username"></td>
+    </tr>
+    <tr>
+        <td>Ingrese su nombre de usuario</td>
+        <td><input type="text" name="username"></td>
+    </tr>
+    <tr>
+        <td>Ingrese su nombre de usuario</td>
+        <td><input type="text" name="username"></td>
+    </tr>
+    <tr>
+        <td>Ingrese su nombre de usuario</td>
+        <td><input type="text" name="username"></td>
+    </tr> -->
+
     <p>Este es un formulario para proveedores.</p>
     <!-- Agrega aquí contenido específico para el formulario de proveedor -->
     {% else %}

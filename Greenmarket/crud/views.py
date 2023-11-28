@@ -5,7 +5,7 @@ from django.contrib.auth import login, logout, authenticate, get_user_model
 from .forms import ClienteForm, ProveedorForm, RegistroForm, LoginForm
 
 from django.shortcuts import redirect
-from .models import Usuario, Cliente, Proveedor
+from .models import Comuna, Usuario, Cliente, Proveedor
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.hashers import make_password  # Importa make_password
 from django.contrib.auth.decorators import user_passes_test, login_required
@@ -129,3 +129,8 @@ def crear_perfil_cliente(request):
     return render(
         request, "crearperfil.html", {"form": form}
     )  # Renderizar el formulario de creación de perfil de cliente
+
+
+def comunas(request):
+    comunas = Comuna.objects.all()
+    return render(request, "crearperfil.html", {"comunas": comunas})
