@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render
 from django.shortcuts import render
 from django.contrib.auth import login, logout, authenticate, get_user_model
@@ -9,6 +10,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.hashers import make_password  # Importa make_password
 from django.contrib.auth.decorators import user_passes_test, login_required
 from django.shortcuts import redirect
+from django.views.decorators.csrf import csrf_protect
 
 
 # Create your views here.
@@ -16,10 +18,12 @@ def home(request):
     return render(request, "home.html")
 
 
+@csrf_protect
 def producto(request):
     return render(request, "productos.html")
 
 
+@csrf_protect
 def registro(request):
     if request.method == "POST":
         form = RegistroForm(request.POST)
@@ -47,20 +51,35 @@ def registro(request):
     return render(request, "registro.html", {"form": form})
 
 
+from django.contrib.auth.hashers import check_password
+
+
 def iniciosesion(request):
     if request.method == "POST":
-        form = LoginForm(data=request.POST)
-        if form.is_valid():
-            # Autenticación manual
-            user = form.get_user()
-            login(request, user)
-            return redirect("home")
-    else:
-        form = LoginForm()
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
-    return render(request, "login.html", {"form": form})
+        try:
+            usuario = Usuario.objects.get(username=username)
+            if check_password(
+                password, usuario.password
+            ):  # Verifica la contraseña utilizando check_password
+                request.session["username"] = usuario.username
+                request.session["tipo_perfil"] = usuario.tipo_perfil
+
+                return render(request, "home.html")
+            else:
+                messages.error(request, "Nombre de usuario o contraseña incorrectos..!")
+        except Usuario.DoesNotExist:
+            messages.error(request, "Nombre de usuario o contraseña incorrectos..!")
+
+    return render(request, "login.html")
 
 
 def signout(request):
     logout(request)
     return redirect("home")
+
+
+def tienda(request):
+    return render(request, "tienda.html")

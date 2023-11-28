@@ -24,6 +24,6 @@ urlpatterns = [
     path("registro/", views.registro, name="registro"),
     path("iniciosesion/", views.iniciosesion, name="iniciosesion"),
     path("producto", views.producto, name="producto"),
-    # path("tienda/", views.tienda, name="tienda"),
+    path("tienda/", views.tienda, name="tienda"),
     path("cerrarsesion/", views.signout, name="cerrarsesion"),
 ]

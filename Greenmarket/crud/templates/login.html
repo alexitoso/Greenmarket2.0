@@ -6,13 +6,52 @@
     <title>Iniciar sesión</title>
 </head>
 
+
 <body>
     <h2>Iniciar sesión</h2>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Iniciar sesión</button>
+        <tr>
+            <td>Ingrese su nombre de usuario</td>
+            <td><input type="text" name="username"></td>
+        </tr>
+        <tr>
+            <td>Ingrese su contraseña</td>
+            <td><input type="password" name="password"></td>
+        </tr>
+        <tr>
+            <input type="checkbox" id="showPassword">
+            <label for="showPassword">Mostrar contraseña</label>
+            <button type="submit" id="submitButton">Iniciar sesión</button>
+        </tr>
     </form>
 </body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const passwordInput = document.querySelector('input[type="password"]');
+        const showPasswordCheckbox = document.getElementById('showPassword');
+
+        showPasswordCheckbox.addEventListener('change', function () {
+            if (showPasswordCheckbox.checked) {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
+        });
+    });
+    // submitButton.addEventListener('click', function (event) {
+    //     event.preventDefault(); // Evitar que el formulario se envíe automáticamente
+    //     const form = document.querySelector('form');
+    //     // Realizar alguna validación aquí si es necesario antes de redirigir
+    //     form.submit(); // Envía el formulario
+
+    //     // Redirigir después de enviar el formulario
+    //     window.location.href = '/producto'; // Reemplaza "/pagina-de-destino" con la URL de destino
+    // });
+
+
+</script>
+
 
 </html>

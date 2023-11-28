@@ -15,21 +15,32 @@
         </a>
     </li>
 
-    {% if user.is_authenticated %}
+    {% if request.session.username and request.session.tipo_perfil %}
+    {{ request.session.username }}
+    {{ request.session.tipo_perfil }}
+
+    {% if request.session.tipo_perfil == 'proveedor' %}
     <li>
         <a href="/producto">Productos</a>
     </li>
+    {% else %}
     <li>
-        <a href="/cerrarsesion">Cerrar sesion</a>
+        <a href="/tienda">Tienda</a>
+    </li>
+    {% endif %}
+
+    <li>
+        <a href="/cerrarsesion">Cerrar sesión</a>
     </li>
     {% else %}
     <li>
-        <a href="/iniciosesion">Iniciar sesion</a>
+        <a href="/iniciosesion">Iniciar sesión</a>
     </li>
     <li>
         <a href="/registro">Registrarse</a>
     </li>
     {% endif %}
+
 </body>
 
 </html>
