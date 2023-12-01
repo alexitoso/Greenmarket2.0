@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from crud import views
 
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.home, name="home"),
@@ -27,11 +28,15 @@ urlpatterns = [
     path("tienda/", views.tienda, name="tienda"),
     path("cerrarsesion/", views.signout, name="cerrarsesion"),
     path(
-        "crearperfil-proveedor/",
+        "iniciosesion/perfilP/",
         views.crear_perfil_proveedor,
-        name="crearperfil_proveedor",
+        name="perfilP",
     ),
     path(
-        "crearperfil-cliente/", views.crear_perfil_cliente, name="crearperfil_cliente"
+        "iniciosesion/perfilC/",
+        views.crear_perfil_cliente,
+        name="perfilC",
     ),
+    path("iniciosesion/cliente/", views.clientes, name="Cliente"),
+    path("iniciosesion/cliente/<int:cliente_id>/", views.perfilcliente, name="perfilcliente"),
 ]

@@ -44,16 +44,69 @@ class LoginForm(AuthenticationForm):
 
 
 # intento 1
-from .models import Comuna, Proveedor, Cliente
+from .models import Comuna, EstadoCivil, Proveedor, Cliente, Sexo, Usuario
 
 
 class ProveedorForm(forms.ModelForm):
+    id_comuna = forms.ModelChoiceField(queryset=Comuna.objects.all())
+    id_estado = forms.ModelChoiceField(queryset=EstadoCivil.objects.all())
+    id_sexo = forms.ModelChoiceField(queryset=Sexo.objects.all())
+
     class Meta:
         model = Proveedor
-        fields = "__all__"  # Puedes especificar los campos si no quieres todos
+        fields = [
+            "rut_proveedor",
+            "dv_proveedor",
+            "id_comuna",
+            "edad",
+            "nombre_proveedor",
+            "apellidom",
+            "apellidop",
+            "direccion",
+            "nombre_tienda",
+            "descripcion",
+            "telefono",
+            "id_estado",
+            "id_sexo",
+            "correo",
+            "id_usuario",
+        ]
+
+
+# class ProveedorForm(forms.ModelForm):
+#     class Meta:
+#         model = Proveedor
+#         fields = "__all__"  # Puedes especificar los campos si no quieres todos
+
+
+# class ClienteForm(forms.ModelForm):
+#     class Meta:
+#         model = Cliente
+#         fields = "__all__"  # Puedes especificar los campos si no quieres todos
 
 
 class ClienteForm(forms.ModelForm):
+    # Obtener opciones para los campos de clave foránea
+    id_sexo = forms.ModelChoiceField(queryset=Sexo.objects.all())
+    id_estado = forms.ModelChoiceField(queryset=EstadoCivil.objects.all())
+    id_comuna = forms.ModelChoiceField(queryset=Comuna.objects.all())
+    id_usuario = forms.ModelChoiceField(queryset=Usuario.objects.all())
+
     class Meta:
         model = Cliente
-        fields = "__all__"  # Puedes especificar los campos si no quieres todos
+        fields = [
+            "id_sexo",
+            "id_estado",
+            "id_comuna",
+            "rut_cliente",
+            "dv_cliente",
+            "pnombre",
+            "snombre",
+            "apellidom",
+            "apellidop",
+            "telefono",
+            "edad",
+            "direccion",
+            "correo",
+            "id_usuario",
+        ]

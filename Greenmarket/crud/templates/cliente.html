@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>perfil {{request.session.tipo_perfil}}</title>
+</head>
+
+<body>
+    <h1>Cliente</h1>
+
+    <ul>
+
+        {% for cliente in clientes %}
+        <li>
+            <a href="{% url 'perfilcliente' cliente.id %}">
+                <p>{{ cliente.nombre_cliente }}</p>
+                <p>{{ cliente.rut_cliente }} - {{ cliente.dv_cliente }}</p>
+                <p>{{ cliente.usuario.username }}</p>
+            </a>
+        </li>
+        {% endfor %}
+
+        <a href="{% url 'home' %}" class="btn btn-primary">Volver a la página de inicio</a>
+
+    </ul>
+</body>
+
+</html>

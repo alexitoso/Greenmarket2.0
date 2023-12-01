@@ -1,0 +1,9 @@
+<h1>{{client.nombre}}</h1>
+{{ error }}
+<form method="POST">
+    {% csrf_token %}
+    {{form.as_p}}
+    <button>
+        Actualizar
+    </button>
+</form>

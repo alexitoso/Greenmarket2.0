@@ -8,13 +8,6 @@
 </head>
 
 <body>
-
-    <li>
-        <a href="/">
-            <h3>Inicio</h3>
-        </a>
-    </li>
-
     {% if request.session.username and request.session.tipo_perfil %}
     {{ request.session.username }}
     {{ request.session.tipo_perfil }}
@@ -24,6 +17,13 @@
         <a href="/producto">Productos</a>
     </li>
     {% else %}
+
+    <li>
+        <a href="/iniciosesion/cliente/">perfil</a>
+    </li>
+    <li>
+        <a href="/iniciosesion/perfilC/">crear perfil</a>
+    </li>
     <li>
         <a href="/tienda">Tienda</a>
     </li>
@@ -40,7 +40,6 @@
         <a href="/registro">Registrarse</a>
     </li>
     {% endif %}
-
 </body>
 
 </html>
