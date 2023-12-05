@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear perfil {{ request.session.tipo_perfil }}</title>
+    <title>Crear Perfil Cliente</title>
 </head>
 
 <body>
-    <h1>Crear perfil</h1>
+    <h1>Crear Perfil Cliente</h1>
     <form method="post">
         {% csrf_token %}
-        <h2>Formulario para Cliente</h2>
         {{ form.as_p }}
-
-        <button type="submit">Guardar</button>
+        <input type="submit" value="Guardar">
+        <a href="javascript:history.back()">Volver atrás</a>
     </form>
+
 </body>
 
 </html>

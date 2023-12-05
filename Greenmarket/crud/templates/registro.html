@@ -1,11 +1,68 @@
-{% if form.errors %}
-<div class="alert alert-danger">
-    <strong>Error:</strong> Hay problemas con el formulario.
-</div>
-{% endif %}
+<!DOCTYPE html>
+<html lang="es">
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Registrarse</button>
-</form>
+<head>
+    <meta charset="UTF-8">
+    <title>Registro</title>
+</head>
+
+<body>
+    <h1>Registro</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Registrarse">
+    </form>
+    {% if error %}
+    <p>{{ error }}</p>
+    {% endif %}
+</body>
+
+</html>
+<!-- <!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Registro</title>
+</head>
+
+<body>
+    <h1>Registro</h1>
+    {% if error %}
+    <p>{{ error }}</p>
+    {% endif %}
+
+    <form id="registroForm" method="post">
+        {% csrf_token %}
+        {{ registro_form.as_p }}
+        {{ cliente_form.as_p }}
+
+        <div id="proveedorFormWrapper" style="display: none;">
+            {{ proveedor_form.as_p }}
+        </div>
+
+        <select id="tipoPerfil" name="tipo_perfil">
+            <option value="cliente">Cliente</option>
+            <option value="proveedor">Proveedor</option>
+        </select>
+
+        <input type="submit" value="Registrar">
+    </form>
+
+    <script>
+        const tipoPerfilSelect = document.getElementById('tipoPerfil');
+        const proveedorFormWrapper = document.getElementById('proveedorFormWrapper');
+
+        tipoPerfilSelect.addEventListener('change', function () {
+            const selectedValue = tipoPerfilSelect.value;
+            if (selectedValue === 'proveedor') {
+                proveedorFormWrapper.style.display = 'block';
+            } else {
+                proveedorFormWrapper.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html> -->

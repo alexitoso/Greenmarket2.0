@@ -1,11 +1,23 @@
 from django.contrib import messages
+from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, render
 from django.shortcuts import render
-from django.contrib.auth import login, logout, authenticate, get_user_model
-from .forms import ClienteForm, ProveedorForm, RegistroForm, LoginForm
+from django.contrib.auth import (
+    login,
+    logout as django_logout,
+    authenticate,
+    get_user_model,
+)
+from .forms import (
+    ClienteForm,
+    CustomAuthenticationForm,
+    CustomUserCreationForm,
+    ProveedorForm,
+    # RegistroForm,
+)
 
 from django.shortcuts import redirect
-from .models import Comuna, EstadoCivil, Sexo, Usuario, Cliente, Proveedor
+from .models import Comuna, CustomUser, EstadoCivil, Sexo, Usuario, Cliente, Proveedor
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.hashers import make_password  # Importa make_password
 from django.contrib.auth.decorators import user_passes_test, login_required
@@ -15,7 +27,29 @@ from django.views.decorators.csrf import csrf_protect
 
 # Create your views here.
 def home(request):
-    return render(request, "home.html")
+    # tiene_perfil_cliente = Cliente.objects.filter(id_usuario=request.user).exists()
+    # tiene_perfil_proveedor = Proveedor.objects.filter(id_usuario=request.user).exists()
+
+    return render(
+        request,
+        "home.html",
+        # {
+        #     "tiene_perfil_cliente": tiene_perfil_cliente,
+        #     "tiene_perfil_proveedor": tiene_perfil_proveedor,
+        # },
+    )
+
+
+def signout(request):
+    if request.user.is_authenticated:
+        django_logout(request)
+        # Redirige a donde desees después de cerrar sesión
+        return redirect("home")
+    else:
+        # Manejo si el usuario no está autenticado
+        # Posiblemente muestra un mensaje de error o redirige a otra página
+        return redirect("home")
+
 
 @login_required
 @csrf_protect
@@ -23,176 +57,155 @@ def producto(request):
     return render(request, "productos.html")
 
 
-@csrf_protect
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+from .forms import CustomUserCreationForm
+
+
 def registro(request):
     if request.method == "POST":
-        form = RegistroForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data["username"]
-            password = form.cleaned_data["password"]
-            tipo_perfil = form.cleaned_data["tipo_perfil"]
+            password = form.cleaned_data["password1"]
+            password_confirmation = form.cleaned_data["password2"]
 
-            # Encripta la contraseña antes de guardarla
-            hashed_password = make_password(password)
+            if password != password_confirmation:
+                form.add_error("password2", "Las contraseñas no coinciden.")
+                return render(request, "registro.html", {"form": form})
 
-            # Crea un nuevo usuario utilizando el modelo TuModeloDeUsuario
-            nuevo_usuario = Usuario.objects.create(
-                username=username, password=hashed_password, tipo_perfil=tipo_perfil
-            )
+            user = form.save()
 
-            # Guarda el nuevo usuario en la base de datos
-            nuevo_usuario.save()
+            # Autenticación después de crear el usuario
+            user = authenticate(request, username=user.username, password=password)
+            login(request, user)
 
-            # Redirecciona a alguna página de éxito o a donde desees
             return redirect("home")
     else:
-        form = RegistroForm()
+        form = CustomUserCreationForm()
 
     return render(request, "registro.html", {"form": form})
 
 
-from django.contrib.auth.hashers import check_password
-
-
 def iniciosesion(request):
     if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
+        form = CustomAuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect("home")
+    else:
+        form = CustomAuthenticationForm()
 
-        try:
-            usuario = Usuario.objects.get(username=username)
-            if check_password(
-                password, usuario.password
-            ):  # Verifica la contraseña utilizando check_password
-                request.session["username"] = usuario.username
-                request.session["tipo_perfil"] = usuario.tipo_perfil
-                request.session["id_usuario"] = usuario.id_usuario
+    return render(request, "login.html", {"form": form})
 
-                return render(request, "home.html")
-            else:
-                messages.error(request, "Nombre de usuario o contraseña incorrectos..!")
-        except Usuario.DoesNotExist:
-            messages.error(request, "Nombre de usuario o contraseña incorrectos..!")
 
-    return render(request, "login.html")
-
-@login_required
-def signout(request):
-    logout(request)
-    return redirect("home")
-
-@login_required
 def tienda(request):
     return render(request, "tienda.html")
 
-@login_required
-def crear_perfil_proveedor(request):
-    if request.method == "POST":
-        proveedor_form = ProveedorForm(request.POST)
-        if proveedor_form.is_valid():
-            proveedor = proveedor_form.save(commit=False)
-            proveedor.id_usuario_id = request.session["id_usuario"]
-            proveedor.save()
-            # Puedes redirigir a una página de éxito o realizar otra acción
-    else:
-        proveedor_form = ProveedorForm()
 
-    return render(request, "crearperfilP.html", {"proveedor_form": proveedor_form})
+# cliente
 
 
-# # @login_required
-# # def crear_perfil_cliente(request):
-# #     if request.method == "Get":
-# #         cliente_form = ClienteForm(request.POST)
-# #         if cliente_form.is_valid():
-# #             cliente = cliente_form.save(
-# #                 commit=False
-# #             )  # Obtén una instancia del modelo sin guardarla aún
-# #             cliente.id_usuario_id = request.session[
-# #                 "id_usuario"
-# #             ]  # Asigna el id_usuario desde la sesión
-# #             cliente.save()  # Guarda el objeto Cliente en la base de datos
-# #             # Puedes redirigir a una página de éxito o realizar otra acción
-# #     else:
-# #         cliente_form = ClienteForm()
-
-# #     return render(request, "crearperfilC.html", {"cliente_form": cliente_form})
-
-@login_required
-def clientes(request):
-        # Obtener el cliente según el id_usuario actual
-    id_usuario_actual = request.user.id
-    client = Cliente.objects.filter(id_usuario=id_usuario_actual).first()
-
-    return render(request, 'cliente.html', {'client': client})
-
-
-@login_required
 def crear_perfil_cliente(request):
-    if request.method == "POST":
+    if request.method == "POST" and request.user.is_authenticated:
         form = ClienteForm(request.POST)
         if form.is_valid():
-            try:
-                nueva_carga = form.save(commit=False)
-                nueva_carga.id_usuario = request.user
-                nueva_carga.save()
-                return redirect('cliente')  # Redirige al perfil después de guardar
-            except ValueError:
-                return render(
-                    request,
-                    "crearperfilC.html",
-                    {"form": form, "error": "Entregue datos válidos"},
-                )
-        else:
-            return render(
-                request,
-                "crearperfilC.html",
-                {"form": form, "error": "Formulario inválido"},
-            )
+            nuevo_cliente = form.save(commit=False)
+            nuevo_cliente.id_usuario = request.user  # Asigna el usuario actual
+            nuevo_cliente.save()
+            return redirect("Cliente")  # Redirige al perfil después de guardar
     else:
-        form = ClienteForm()  # Si no es un método POST, crea un formulario vacío
-        return render(request, "crearperfilC.html", {"form": form})
+        form = ClienteForm(
+            initial={
+                "id_sexo": Sexo.objects.first(),  # Ejemplo para obtener el primer objeto
+                "id_estado": EstadoCivil.objects.first(),
+                "id_comuna": Comuna.objects.first(),
+            }
+        )
 
-@login_required
-def perfilcliente(request, id_cliente):
-    
+    return render(request, "crearperfilC.html", {"form": form})
 
-    if request.method == "GET":
-        client = get_object_or_404(Cliente, pk=id_cliente, id_usuario=request.user.id)
-        form = ClienteForm(instance=client)
-        return render(request, "obtenerperfilC.html", {"client": client, "form": form})
-    else:
-        try:
-            client = get_object_or_404(Cliente, pk=id_cliente, id_usuario=request.user.id)
-            form = ClienteForm(request.POST, instance=client)
+
+def obtener_perfil_cliente(request):
+    try:
+        perfil_cliente = Cliente.objects.get(id_usuario=request.user)
+    except Cliente.DoesNotExist:
+        perfil_cliente = None
+
+    if request.method == "POST":
+        form = ClienteForm(request.POST, instance=perfil_cliente)
+        if form.is_valid():
             form.save()
-            return redirect("cliente")
-        except ValueError:
-            return (
-                request,
-                "obtenerperfilC.html",
-                {
-                    "client": client,
-                    "form": form,
-                    "error": "Error al actualizar el perfil",
-                },
-            )
+            return redirect("Cliente")  # Redirige al perfil después de guardar
+    else:
+        form = ClienteForm(instance=perfil_cliente)
+
+    return render(request, "obtenerperfilC.html", {"form": form})
 
 
-@login_required
-def mostrar_comunas(request):
-    comunas = Comuna.objects.all()
-    print(comunas)
-    return render(request, "crearperfil.html", {"comunas": comunas})
+def editar_perfil_cliente(request):
+    perfil_cliente = get_object_or_404(Cliente, id_usuario=request.user)
 
-@login_required
-def mostrar_sexo(request):
-    sexos = Sexo.objects.all()
-    print(sexos)
-    return render(request, "crearperfil.html", {"sexos": sexos})
+    if request.method == "POST":
+        form = ClienteForm(request.POST, instance=perfil_cliente)
+        if form.is_valid():
+            form.save()
+            return redirect(
+                "Cliente"
+            )  # Redirige a la página del perfil después de guardar
 
-@login_required
-def mostrar_estado(request):
-    estados = EstadoCivil.objects.all()
-    print(estados)
-    return render(request, "crearperfil.html", {"estados": estados})
+    else:
+        form = ClienteForm(instance=perfil_cliente)
+
+    return render(request, "editarperfilC.html", {"form": form})
+
+
+# proveedor
+
+
+def crear_perfil_proveedor(request):
+    if request.method == "POST" and request.user.is_authenticated:
+        form = ProveedorForm(request.POST)
+        if form.is_valid():
+            nuevo_proveedor = form.save(commit=False)
+            nuevo_proveedor.id_usuario = request.user  # Asigna el usuario actual
+            nuevo_proveedor.save()
+            return redirect("Proveedor")  # Redirige al perfil después de guardar
+    else:
+        form = ProveedorForm()
+
+    return render(request, "crearperfilP.html", {"form": form})
+
+
+def obtener_perfil_proveedor(request):
+    try:
+        perfil_proveedor = Proveedor.objects.get(id_usuario=request.user)
+    except Proveedor.DoesNotExist:
+        perfil_proveedor = None
+
+    if request.method == "POST":
+        form = ProveedorForm(request.POST, instance=perfil_proveedor)
+        if form.is_valid():
+            form.save()
+            return redirect("Proveedor")  # Redirige al perfil después de guardar
+    else:
+        form = ProveedorForm(instance=perfil_proveedor)
+
+    return render(request, "obtenerperfilP.html", {"form": form})
+
+
+def editar_perfil_proveedor(request):
+    perfil_proveedor = get_object_or_404(Proveedor, id_usuario=request.user)
+
+    if request.method == "POST":
+        form = ProveedorForm(request.POST, instance=perfil_proveedor)
+        if form.is_valid():
+            form.save()
+            return redirect(
+                "Proveedor"
+            )  # Redirige a la página del perfil después de guardar
+
+    else:
+        form = ProveedorForm(instance=perfil_proveedor)
+
+    return render(request, "editarperfilP.html", {"form": form})

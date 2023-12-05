@@ -6,7 +6,7 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
-from django.core.exceptions import ValidationError
+
 
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150, blank=True, null=True)
@@ -94,21 +94,17 @@ class Cliente(models.Model):
     edad = models.BigIntegerField()
     direccion = models.CharField(max_length=50)
     correo = models.CharField(max_length=50)
-    id_usuario = models.ForeignKey("Usuario", models.DO_NOTHING, db_column="id_usuario")
+    id_usuario = models.ForeignKey(
+        "CustomUser", models.DO_NOTHING, db_column="id_usuario"
+    )
 
     class Meta:
         managed = False
         db_table = "cliente"
-    def save(self, *args, **kwargs):
-        # Verifica si ya existe un cliente con el mismo id_usuario
-        existing_client = Cliente.objects.filter(id_usuario=self.id_usuario).first()
-        
-        if existing_client:
-            # Si existe, lanza una excepción o maneja el caso según tu lógica
-            raise ValidationError("Ya existe un cliente asociado a este usuario.")
-        
-        # Si no existe, guarda el cliente normalmente
-        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.pnombre} "
+
 
 class Comuna(models.Model):
     id_region = models.ForeignKey("Region", models.DO_NOTHING, db_column="id_region")
@@ -300,7 +296,9 @@ class Proveedor(models.Model):
     id_estado = models.ForeignKey(EstadoCivil, models.DO_NOTHING, db_column="id_estado")
     id_sexo = models.ForeignKey("Sexo", models.DO_NOTHING, db_column="id_sexo")
     correo = models.CharField(max_length=50)
-    id_usuario = models.ForeignKey("Usuario", models.DO_NOTHING, db_column="id_usuario")
+    id_usuario = models.ForeignKey(
+        "CustomUser", models.DO_NOTHING, db_column="id_usuario"
+    )
 
     class Meta:
         managed = False
@@ -366,3 +364,14 @@ class Usuario(models.Model):
 
     def __str__(self):
         return f"{self.tipo_perfil} - {self.username}"
+
+
+from django.contrib.auth.models import AbstractUser
+
+
+class CustomUser(AbstractUser):
+    id_usuario = models.BigAutoField(primary_key=True)
+    tipo_perfil = models.CharField(max_length=10, blank=True, null=True)
+
+    class Meta:
+        db_table = "usuario"  # Nombre de la tabla en la base de datos

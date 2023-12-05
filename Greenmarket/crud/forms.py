@@ -1,50 +1,91 @@
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate
+from .models import Comuna, CustomUser, EstadoCivil, Proveedor, Cliente, Sexo, Usuario
 
 
-class RegistroForm(forms.Form):
-    username = forms.CharField(label="Username", max_length=100)
-    password = forms.CharField(
-        widget=forms.PasswordInput(), label="Password", max_length=100
-    )
-    password_confirmation = forms.CharField(
-        widget=forms.PasswordInput(), label="Confirm Password", max_length=100
-    )
+class CustomUserCreationForm(UserCreationForm):
     tipo_perfil = forms.ChoiceField(
         choices=[("proveedor", "Proveedor"), ("cliente", "Cliente")],
         label="Tipo de Perfil",
     )
 
-    def clean(self):
-        cleaned_data = super().clean()
-        password = cleaned_data.get("password")
-        password_confirmation = cleaned_data.get("password_confirmation")
-
-        if password != password_confirmation:
-            raise forms.ValidationError("Las contraseñas no coinciden.")
-
-        return cleaned_data
+    class Meta(UserCreationForm.Meta):
+        model = CustomUser
+        fields = ("username", "password1", "password2", "tipo_perfil")
 
 
-class LoginForm(AuthenticationForm):
-    username = forms.CharField(label="Usuario", max_length=100)
-    password = forms.CharField(widget=forms.PasswordInput(), label="Contraseña")
+class CustomAuthenticationForm(AuthenticationForm):
+    class Meta:
+        model = CustomUser
+        fields = ("username", "password")
 
-    def clean(self):
-        cleaned_data = super().clean()
-        username = cleaned_data.get("username")
-        password = cleaned_data.get("password")
 
-        if username is not None and password:
-            self.user_cache = authenticate(username=username, password=password)
-            if self.user_cache is None or not self.user_cache.is_active:
-                raise forms.ValidationError("Credenciales inválidas")
-        return self.cleaned_data
+# # class RegistroForm(forms.ModelForm):
+# #     password = forms.CharField(
+# #         widget=forms.PasswordInput(), label="Password", max_length=100
+# #     )
+# #     password_confirmation = forms.CharField(
+# #         widget=forms.PasswordInput(), label="Confirm Password", max_length=100
+# #     )
+# #     tipo_perfil = forms.ChoiceField(
+# #         choices=[("proveedor", "Proveedor"), ("cliente", "Cliente")],
+# #         label="Tipo de Perfil",
+# #     )
+
+# #     class Meta:
+# #         model = CustomUser  # Asocia el formulario con el modelo CustomUser
+# #         fields = ["username", "password", "password_confirmation", "tipo_perfil"]
+
+# #     def clean(self):
+# #         cleaned_data = super().clean()
+# #         password = cleaned_data.get("password")
+# #         password_confirmation = cleaned_data.get("password_confirmation")
+
+# #         if password != password_confirmation:
+# #             raise forms.ValidationError("Las contraseñas no coinciden.")
+
+# #         return cleaned_data
+
+
+# # class CustomAuthenticationForm(AuthenticationForm):
+# #     def __init__(self, *args, **kwargs):
+# #         super().__init__(*args, **kwargs)
+# #         # Personaliza los campos si es necesario
+# #         # Ejemplo: cambiar etiquetas o agregar clases CSS
+# #         self.fields["username"].label = "Nombre de usuario"
+# #         self.fields["password"].label = "Contraseña"
+# #         self.fields["password"].widget.attrs.update({"class": "password-input"})
+# #         # Puedes agregar más personalizaciones aquí
+
+# #     def clean(self):
+# #         cleaned_data = super().clean()
+# #         # Agrega validaciones adicionales si es necesario
+# #         # Por ejemplo, verificación de campos, autenticación personalizada, etc.
+# #         return cleaned_data
+
+
+# class LoginForm(forms.Form):
+#     username = forms.CharField(label="Usuario", max_length=100)
+#     password = forms.CharField(widget=forms.PasswordInput(), label="Contraseña")
+
+#     def clean(self):
+#         cleaned_data = super().clean()
+#         username = cleaned_data.get("username")
+#         password = cleaned_data.get("password")
+
+#         if username is not None and password:
+#             user = authenticate(username=username, password=password)
+
+#             if user is None or not user.is_active:
+#                 raise forms.ValidationError(
+#                     "Nombre de usuario o contraseña incorrectos."
+#                 )
+
+#         return cleaned_data
 
 
 # intento 1
-from .models import Comuna, EstadoCivil, Proveedor, Cliente, Sexo, Usuario
 
 
 class ProveedorForm(forms.ModelForm):
@@ -73,25 +114,7 @@ class ProveedorForm(forms.ModelForm):
         ]
 
 
-# class ProveedorForm(forms.ModelForm):
-#     class Meta:
-#         model = Proveedor
-#         fields = "__all__"  # Puedes especificar los campos si no quieres todos
-
-
-# class ClienteForm(forms.ModelForm):
-#     class Meta:
-#         model = Cliente
-#         fields = "__all__"  # Puedes especificar los campos si no quieres todos
-
-
 class ClienteForm(forms.ModelForm):
-    # Obtener opciones para los campos de clave foránea
-    id_sexo = forms.ModelChoiceField(queryset=Sexo.objects.all())
-    id_estado = forms.ModelChoiceField(queryset=EstadoCivil.objects.all())
-    id_comuna = forms.ModelChoiceField(queryset=Comuna.objects.all())
-    id_usuario = forms.ModelChoiceField(queryset=Usuario.objects.all())
-
     class Meta:
         model = Cliente
         fields = [
@@ -108,5 +131,21 @@ class ClienteForm(forms.ModelForm):
             "edad",
             "direccion",
             "correo",
-            "id_usuario",
         ]
+        widgets = {
+            "id_sexo": forms.Select(),  # Define el widget Select para id_sexo
+            "id_estado": forms.Select(),  # Define el widget Select para id_estado
+            "id_comuna": forms.Select(),  # Define el widget Select para id_comuna
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Llena las opciones del widget Select con los valores del queryset correspondiente
+        self.fields["id_sexo"].queryset = Sexo.objects.all()
+        self.fields["id_estado"].queryset = EstadoCivil.objects.all()
+        self.fields["id_comuna"].queryset = Comuna.objects.all()
+
+        # Agregar impresión de los querysets
+        print("Queryset para id_sexo:", self.fields["id_sexo"].queryset)
+        print("Queryset para id_estado:", self.fields["id_estado"].queryset)
+        print("Queryset para id_comuna:", self.fields["id_comuna"].queryset)

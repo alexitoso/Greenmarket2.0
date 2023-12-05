@@ -111,7 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "es"
 
 TIME_ZONE = "UTC"
 
@@ -125,8 +125,16 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-LOGIN_URL = '/inisiosesion'
+LOGIN_URL = "/inisiosesion"
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# En la sección de AUTH_USER_MODEL, configura tu modelo de usuario personalizado
+AUTH_USER_MODEL = "crud.CustomUser"
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",  # Por defecto, usa ModelBackend
+    "crud.CustomBackend.CustomBackend",  # Agrega tu propio backend personalizado si lo tienes
+]

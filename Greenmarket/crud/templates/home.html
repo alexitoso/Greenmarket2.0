@@ -1,43 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagina de inicio</title>
+    <title>Página de inicio</title>
 </head>
 
 <body>
-    {% if request.session.username and request.session.tipo_perfil %}
-    {{ request.session.username }}
-    {{ request.session.tipo_perfil }}
+    {% if request.user.is_authenticated %}
+    {{ request.user.username }}
+    {{ request.user.tipo_perfil }}
 
-    {% if request.session.tipo_perfil == 'proveedor' %}
+    {% if tiene_perfil_cliente and request.user.tipo_perfil == 'cliente' %}
     <li>
-        <a href="/producto">Productos</a>
+        <a href="{% url 'Cliente' %}">Perfil</a>
+    </li>
+    <li>
+        <a href="{% url 'editarperfilC' %}">Editar perfil</a>
     </li>
     {% else %}
+    <li>
+        <a href="{% url 'perfilC' %}">Crear perfil</a>
+    </li>
+    {% endif %}
 
+    {% if tiene_perfil_proveedor and request.user.tipo_perfil == 'proveedor' %}
     <li>
-        <a href="/iniciosesion/cliente/">perfil</a>
+        <a href="{% url 'proveedor' %}">Perfil de proveedor</a>
     </li>
     <li>
-        <a href="/iniciosesion/perfilC/">crear perfil</a>
+        <a href="{% url 'editarperfilP' %}">Editar perfil de proveedor</a>
     </li>
+    {% else %}
     <li>
-        <a href="/tienda">Tienda</a>
+        <a href="{% url 'perfilP' %}">Crear perfil de proveedor</a>
     </li>
     {% endif %}
 
     <li>
-        <a href="/cerrarsesion">Cerrar sesión</a>
+        <a href="{% url 'cerrarsesion' %}">Cerrar sesión</a>
     </li>
+
     {% else %}
     <li>
-        <a href="/iniciosesion">Iniciar sesión</a>
+        <a href="{% url 'iniciosesion' %}">Iniciar sesión</a>
     </li>
     <li>
-        <a href="/registro">Registrarse</a>
+        <a href="{% url 'registro' %}">Registrarse</a>
     </li>
     {% endif %}
 </body>

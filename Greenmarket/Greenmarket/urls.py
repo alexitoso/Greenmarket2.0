@@ -27,16 +27,30 @@ urlpatterns = [
     path("producto", views.producto, name="producto"),
     path("tienda/", views.tienda, name="tienda"),
     path("cerrarsesion/", views.signout, name="cerrarsesion"),
+    # cliente
+    path(
+        "iniciosesion/perfilC/",
+        views.crear_perfil_cliente,
+        name="perfilC",
+    ),
+    path("iniciosesion/cliente/", views.obtener_perfil_cliente, name="editarperfilC"),
+    path(
+        "iniciosesion/cliente/editarperfil",
+        views.editar_perfil_cliente,
+        name="Cliente",
+    ),
+    # proveedor
     path(
         "iniciosesion/perfilP/",
         views.crear_perfil_proveedor,
         name="perfilP",
     ),
     path(
-        "iniciosesion/perfilC/",
-        views.crear_perfil_cliente,
-        name="perfilC",
+        "iniciosesion/proveedor/", views.obtener_perfil_proveedor, name="editarperfilP"
     ),
-    path("iniciosesion/cliente/", views.clientes, name="Cliente"),
-    path("iniciosesion/cliente/<int:cliente_id>/", views.perfilcliente, name="perfilcliente"),
+    path(
+        "iniciosesion/proveedor/editarperfil",
+        views.editar_perfil_proveedor,
+        name="Proveedor",
+    ),
 ]

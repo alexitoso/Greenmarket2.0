@@ -3,55 +3,34 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Iniciar sesión</title>
+    <title>Iniciar Sesión</title>
 </head>
 
-
 <body>
-    <h2>Iniciar sesión</h2>
+    <h1>Iniciar Sesión</h1>
     <form method="post">
         {% csrf_token %}
-        <tr>
-            <td>Ingrese su nombre de usuario</td>
-            <td><input type="text" name="username"></td>
-        </tr>
-        <tr>
-            <td>Ingrese su contraseña</td>
-            <td><input type="password" name="password"></td>
-        </tr>
-        <tr>
-            <input type="checkbox" id="showPassword">
-            <label for="showPassword">Mostrar contraseña</label>
-            <button type="submit" id="submitButton">Iniciar sesión</button>
-        </tr>
+        {{ form.as_p }}
+        <input type="checkbox" id="showPassword">
+        <label for="showPassword">Mostrar contraseña</label><br><br>
+        <input type="submit" value="Iniciar Sesión">
     </form>
-</body>
+    {% if form.errors %}
+    <p>{{ form.errors }}</p>
+    {% endif %}
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const passwordInput = document.querySelector('input[type="password"]');
-        const showPasswordCheckbox = document.getElementById('showPassword');
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const passwordInput = document.querySelector('input[type="password"]');
+            const showPasswordCheckbox = document.getElementById('showPassword');
 
-        showPasswordCheckbox.addEventListener('change', function () {
-            if (showPasswordCheckbox.checked) {
-                passwordInput.type = 'text';
-            } else {
-                passwordInput.type = 'password';
-            }
+            showPasswordCheckbox.addEventListener('change', function () {
+                if (showPasswordCheckbox.checked) {
+                    passwordInput.type = 'text';
+                } else {
+                    passwordInput.type = 'password';
+                }
+            });
         });
-    });
-    // submitButton.addEventListener('click', function (event) {
-    //     event.preventDefault(); // Evitar que el formulario se envíe automáticamente
-    //     const form = document.querySelector('form');
-    //     // Realizar alguna validación aquí si es necesario antes de redirigir
-    //     form.submit(); // Envía el formulario
-
-    //     // Redirigir después de enviar el formulario
-    //     window.location.href = '/producto'; // Reemplaza "/pagina-de-destino" con la URL de destino
-    // });
-
-
-</script>
-
-
-</html>
+    </script>
+</body>
