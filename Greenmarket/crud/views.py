@@ -223,50 +223,58 @@ def editar_perfil_proveedor(request):
     return render(request, "proveedor.html", {"form": form})
 
 
-# carga de productos
-def cargar_producto(request):
+# crud de productos como proveedor
+def listar_productos(request):
+    productos = Producto.objects.all()
+    return render(request, "listarproductos.html", {"productos": productos})
+
+
+def crear_producto(request):
     if request.method == "POST":
         form = ProductoForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            return redirect(
-                "home"
-            )  # Cambia 'pagina_de_inicio' por la URL a la que quieras redirigir después de guardar el producto
+            producto = form.save(commit=False)
+            if request.user.is_authenticated:
+                proveedor_actual = Proveedor.objects.get(id_usuario=request.user)
+                producto.id_proveedor = proveedor_actual
+                producto.save()
+                return redirect("listar_productos")
     else:
         form = ProductoForm()
+    return render(request, "crear_producto.html", {"form": form})
 
-    return render(request, "crearproducto.html", {"form": form})
+
+def editar_producto(request, producto_id):
+    producto = get_object_or_404(Producto, id_producto=producto_id)
+    if request.method == "POST":
+        form = ProductoForm(request.POST, request.FILES, instance=producto)
+        if form.is_valid():
+            form.save()
+            return redirect("listar_productos")
+    else:
+        form = ProductoForm(instance=producto)
+    return render(request, "editar_producto.html", {"form": form})
 
 
-# MOSTRAR EN TIENDA
-# def mostrar_productos(request):
-#     # Obtener los productos asociados a la sesión actual
-#     productos_usuario = Producto.objects.filter(usuario=request.user)
+def eliminar_producto(request, producto_id):
+    producto = get_object_or_404(Producto, id_producto=producto_id)
+    if request.method == "POST":
+        producto.delete()
+        return redirect("listar_productos")
+    return render(request, "eliminar_producto.html", {"producto": producto})
 
-#     return render(request, "tienda.html", {"productos": productos_usuario})
-from django.shortcuts import render
-from .models import Producto
+
+# mostrar productos en la tienda como cliente
 
 
 def mostrar_productos(request):
-    # Obtener todos los productos y sus proveedores a través de OrdenDeCompra
-    productos_con_proveedor = []
-    productos = Producto.objects.all()
+    proveedores_con_productos = Proveedor.objects.filter(
+        producto__isnull=False
+    ).distinct()
+    return render(request, "tienda.html", {"proveedores": proveedores_con_productos})
 
-    for producto in productos:
-        orden_compra = OrdenCompra.objects.filter(producto=producto).first()
-        proveedor = OrdenCompra.id_proveedor
-        usuario_proveedor = Proveedor.id_usuario
 
-        # Agregar los datos del producto y su proveedor a la lista
-        productos_con_proveedor.append(
-            {
-                "producto": producto,
-                "proveedor": proveedor,
-                "usuario_proveedor": usuario_proveedor,
-            }
-        )
-
-    return render(
-        request, "tienda.html", {"productos_con_proveedor": productos_con_proveedor}
-    )
+# detalle producto como cliente
+def detalle_producto(request, producto_id):
+    producto = Producto.objects.get(id_producto=producto_id)
+    return render(request, "detalleproducto.html", {"producto": producto})

@@ -268,20 +268,6 @@ class Pago(models.Model):
         return self.descripcion
 
 
-class Producto(models.Model):
-    id_producto = models.BigAutoField(primary_key=True)
-    nombre = models.CharField(max_length=50)
-    descripcion = models.CharField(max_length=50)
-    tipo_producto = models.CharField(max_length=50)
-    precio = models.BigIntegerField()
-    stock = models.BigIntegerField()
-    imagen = models.ImageField(upload_to="productos/", null=True, blank=True)
-
-    class Meta:
-        managed = False
-        db_table = "producto"
-
-
 class Proveedor(models.Model):
     id_proveedor = models.BigAutoField(primary_key=True)
     rut_proveedor = models.BigIntegerField()
@@ -305,6 +291,23 @@ class Proveedor(models.Model):
     class Meta:
         managed = False
         db_table = "proveedor"
+
+
+class Producto(models.Model):
+    id_producto = models.BigAutoField(primary_key=True)
+    nombre = models.CharField(max_length=50)
+    descripcion = models.CharField(max_length=50)
+    tipo_producto = models.CharField(max_length=50)
+    precio = models.BigIntegerField()
+    stock = models.BigIntegerField()
+    imagen = models.ImageField(upload_to="productos/", null=True, blank=True)
+    id_proveedor = models.ForeignKey(
+        Proveedor, models.DO_NOTHING, db_column="id_proveedor"
+    )
+
+    class Meta:
+        managed = False
+        db_table = "producto"
 
 
 class Region(models.Model):

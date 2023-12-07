@@ -35,7 +35,6 @@ urlpatterns = [
         views.crear_perfil_cliente,
         name="perfilC",
     ),
-    # path("iniciosesion/cliente/", views.obtener_perfil_cliente, name="editarperfilC"),
     path(
         "iniciosesion/cliente/editarperfil",
         views.editar_perfil_cliente,
@@ -47,15 +46,29 @@ urlpatterns = [
         views.crear_perfil_proveedor,
         name="perfilP",
     ),
-    # path(
-    #     "iniciosesion/proveedor/", views.obtener_perfil_proveedor, name="editarperfilP"
-    # ),
     path(
         "iniciosesion/proveedor/editarperfil",
         views.editar_perfil_proveedor,
         name="Proveedor",
     ),
-    path("cargarproducto/", views.cargar_producto, name="cargarproducto"),
+    path(
+        "detalleproducto/<int:producto_id>/",
+        views.detalle_producto,
+        name="detalleproducto",
+    ),
+    # crud productos
+    path("listar-productos/", views.listar_productos, name="listar_productos"),
+    path("crear-producto/", views.crear_producto, name="crear_producto"),
+    path(
+        "editar-producto/<int:producto_id>/",
+        views.editar_producto,
+        name="editar_producto",
+    ),
+    path(
+        "eliminar-producto/<int:producto_id>/",
+        views.eliminar_producto,
+        name="eliminar_producto",
+    ),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

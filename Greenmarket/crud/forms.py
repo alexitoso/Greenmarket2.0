@@ -163,4 +163,11 @@ class ClienteForm(forms.ModelForm):
 class ProductoForm(forms.ModelForm):
     class Meta:
         model = Producto
-        fields = ["nombre", "descripcion", "tipo_producto", "precio", "stock", "imagen"]
+        fields = [
+            "nombre",
+            "descripcion",
+            "tipo_producto",
+            "precio",
+            "stock",
+            "imagen",
+        ]

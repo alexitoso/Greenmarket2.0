@@ -1,40 +1,35 @@
-<!-- <!DOCTYPE html>
-<html>
+{% load static %}
 
-<head>
-    <title>Productos</title>
-</head>
-
-<body>
-    <h1>Productos</h1>
-    <ul>
-        {% for producto in productos %}
-        <li>{{ producto.nombre }} - {{ producto.descripcion }} - {{ producto.precio }}</li>
-        
-        {% endfor %}
-    </ul>
-</body>
-
-</html> -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
-    <title>Lista de Productos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Proveedor</title>
+    <a href="javascript:history.back()">Volver atrás</a>
 </head>
 
 <body>
-    <h1>Lista de Productos con Proveedor</h1>
+    <h1>Tiendas con Productos</h1>
     <ul>
-        {% for producto_info in productos_con_proveedor %}
-        <li>
-            <strong>Producto:</strong> {{ producto_info.producto.nombre }} - {{ producto_info.producto.descripcion
-            }}<br>
-            <strong>Proveedor:</strong> {{ producto_info.proveedor.nombre_tienda }}
-        </li>
+        {% for proveedor in proveedores %}
+        <!-- Detalles del proveedor -->
+        <h2>{{ proveedor.nombre_tienda }}</h2>
+        <!-- Listado de productos -->
+        <ul>
+            {% for producto in proveedor.producto_set.all %}
+            <li>
+                <a href="{% url 'detalleproducto' producto.id_producto %}">
+                    {{ producto.nombre }} - Precio: {{ producto.precio }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
         {% endfor %}
     </ul>
+
 </body>
+<script src="{% static 'js/logout_timer.js' %}"></script>
 
 </html>
