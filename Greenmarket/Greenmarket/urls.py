@@ -14,10 +14,12 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from xml.dom.minidom import Document
 from django.contrib import admin
 from django.urls import path
 from crud import views
-
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -25,7 +27,7 @@ urlpatterns = [
     path("registro/", views.registro, name="registro"),
     path("iniciosesion/", views.iniciosesion, name="iniciosesion"),
     path("producto", views.producto, name="producto"),
-    path("tienda/", views.tienda, name="tienda"),
+    path("tienda/", views.mostrar_productos, name="tienda"),
     path("cerrarsesion/", views.signout, name="cerrarsesion"),
     # cliente
     path(
@@ -33,7 +35,7 @@ urlpatterns = [
         views.crear_perfil_cliente,
         name="perfilC",
     ),
-    path("iniciosesion/cliente/", views.obtener_perfil_cliente, name="editarperfilC"),
+    # path("iniciosesion/cliente/", views.obtener_perfil_cliente, name="editarperfilC"),
     path(
         "iniciosesion/cliente/editarperfil",
         views.editar_perfil_cliente,
@@ -45,12 +47,15 @@ urlpatterns = [
         views.crear_perfil_proveedor,
         name="perfilP",
     ),
-    path(
-        "iniciosesion/proveedor/", views.obtener_perfil_proveedor, name="editarperfilP"
-    ),
+    # path(
+    #     "iniciosesion/proveedor/", views.obtener_perfil_proveedor, name="editarperfilP"
+    # ),
     path(
         "iniciosesion/proveedor/editarperfil",
         views.editar_perfil_proveedor,
         name="Proveedor",
     ),
+    path("cargarproducto/", views.cargar_producto, name="cargarproducto"),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

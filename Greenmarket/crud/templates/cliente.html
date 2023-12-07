@@ -1,36 +1,23 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>perfil {{request.session.tipo_perfil}}</title>
+    <script src="{% static 'js/custom.js' %}"></script>
+    <title>perfil {{request.user.tipo_perfil}}</title>
 </head>
 
 <body>
-    <h1>Cliente</h1>
+    <h1>Perfil del Cliente</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Guardar">
 
-    <ul>
-        <h1>Perfil del Cliente</h1>
-        <ul>
-            <li><strong>Nombre:</strong> {{ cliente.pnombre }} {{ cliente.apellidop }}</li>
-            <li><strong>Correo:</strong> {{ cliente.correo }}</li>
-            <!-- Agrega más campos de cliente según tu modelo -->
-        </ul>
 
-        <!-- {% for c in clientes %}
-        <li>
-            <a href="{% url 'perfilcliente' cliente.id %}">
-                <p>{{ c.nombre_cliente }}</p>
-                <p>{{ c.rut_cliente }} - {{ c.dv_cliente }}</p>
-
-            </a>
-        </li>
-        {% endfor %} -->
-
-        <a href="javascript:history.back()">Volver atrás</a>
-
-    </ul>
+        <a href="/">Inicio</a>
+        <script src="{% static 'js/logout_timer.js' %}"></script>
 </body>
-
-</html>

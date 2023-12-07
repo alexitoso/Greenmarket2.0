@@ -13,7 +13,10 @@
         {{ form.as_p }}
         <input type="checkbox" id="showPassword">
         <label for="showPassword">Mostrar contraseña</label><br><br>
+        <input type="hidden" name="next" value="{{ request.GET.next }}" />
         <input type="submit" value="Iniciar Sesión">
+        <a href="javascript:history.back()">Volver atrás</a>
+        <a href="{% url 'registro' %}">Registrarse</a>
     </form>
     {% if form.errors %}
     <p>{{ form.errors }}</p>

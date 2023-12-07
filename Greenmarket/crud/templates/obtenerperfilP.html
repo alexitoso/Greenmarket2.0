@@ -1,9 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static 'js/custom.js' %}"></script>
     <title>Obtener Perfil Proveedor</title>
 </head>
 
@@ -13,7 +15,14 @@
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Guardar">
+        <a href="/">home</a>
     </form>
+    <script>
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1);
+        };
+    </script>
 </body>
 
 </html>

@@ -1,7 +1,16 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate
-from .models import Comuna, CustomUser, EstadoCivil, Proveedor, Cliente, Sexo, Usuario
+from .models import (
+    Comuna,
+    CustomUser,
+    EstadoCivil,
+    Producto,
+    Proveedor,
+    Cliente,
+    Sexo,
+    Usuario,
+)
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -110,7 +119,6 @@ class ProveedorForm(forms.ModelForm):
             "id_estado",
             "id_sexo",
             "correo",
-            "id_usuario",
         ]
 
 
@@ -149,3 +157,10 @@ class ClienteForm(forms.ModelForm):
         print("Queryset para id_sexo:", self.fields["id_sexo"].queryset)
         print("Queryset para id_estado:", self.fields["id_estado"].queryset)
         print("Queryset para id_comuna:", self.fields["id_comuna"].queryset)
+
+
+# productos
+class ProductoForm(forms.ModelForm):
+    class Meta:
+        model = Producto
+        fields = ["nombre", "descripcion", "tipo_producto", "precio", "stock", "imagen"]

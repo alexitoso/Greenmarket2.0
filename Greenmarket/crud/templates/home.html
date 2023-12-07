@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -12,36 +14,41 @@
     {{ request.user.username }}
     {{ request.user.tipo_perfil }}
 
-    {% if tiene_perfil_cliente and request.user.tipo_perfil == 'cliente' %}
+    {% if request.user.tipo_perfil == 'cliente' %}
+    {% if tiene_perfil_cliente %}
     <li>
         <a href="{% url 'Cliente' %}">Perfil</a>
     </li>
     <li>
-        <a href="{% url 'editarperfilC' %}">Editar perfil</a>
+        <a href="{% url 'tienda' %}">productos</a>
     </li>
+
     {% else %}
     <li>
-        <a href="{% url 'perfilC' %}">Crear perfil</a>
+        <a href="{% url 'perfilC' %}">Crear perfil de cliente</a>
     </li>
     {% endif %}
+    {% endif %}
 
-    {% if tiene_perfil_proveedor and request.user.tipo_perfil == 'proveedor' %}
+    {% if request.user.tipo_perfil == 'proveedor' %}
+    {% if tiene_perfil_proveedor %}
     <li>
-        <a href="{% url 'proveedor' %}">Perfil de proveedor</a>
+        <a href="{% url 'Proveedor' %}">Perfil de proveedor</a>
     </li>
     <li>
-        <a href="{% url 'editarperfilP' %}">Editar perfil de proveedor</a>
+        <a href="{% url 'cargarproducto' %}">Carga de productos </a>
     </li>
+
     {% else %}
     <li>
         <a href="{% url 'perfilP' %}">Crear perfil de proveedor</a>
     </li>
     {% endif %}
+    {% endif %}
 
     <li>
         <a href="{% url 'cerrarsesion' %}">Cerrar sesión</a>
     </li>
-
     {% else %}
     <li>
         <a href="{% url 'iniciosesion' %}">Iniciar sesión</a>
@@ -50,6 +57,7 @@
         <a href="{% url 'registro' %}">Registrarse</a>
     </li>
     {% endif %}
+    <script src="{% static 'js/logout_timer.js' %}"></script>
 </body>
 
 </html>

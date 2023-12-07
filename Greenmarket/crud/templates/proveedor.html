@@ -1,9 +1,12 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static 'js/custom.js' %}"></script>
     <title>Editar Perfil Proveedor</title>
 </head>
 
@@ -13,7 +16,10 @@
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Guardar">
+        <a href="javascript:history.back()">Volver atrás</a>
+        <a href="/">home</a>
     </form>
+    <script src="{% static 'js/logout_timer.js' %}"></script>
 </body>
 
 </html>

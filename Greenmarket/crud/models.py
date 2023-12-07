@@ -274,6 +274,8 @@ class Producto(models.Model):
     descripcion = models.CharField(max_length=50)
     tipo_producto = models.CharField(max_length=50)
     precio = models.BigIntegerField()
+    stock = models.BigIntegerField()
+    imagen = models.ImageField(upload_to="productos/", null=True, blank=True)
 
     class Meta:
         managed = False

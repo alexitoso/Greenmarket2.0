@@ -12,6 +12,7 @@
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Registrarse">
+        <a href="/">home</a>
     </form>
     {% if error %}
     <p>{{ error }}</p>

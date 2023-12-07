@@ -1,1 +1,40 @@
-<h1>hola</h1>
+<!-- <!DOCTYPE html>
+<html>
+
+<head>
+    <title>Productos</title>
+</head>
+
+<body>
+    <h1>Productos</h1>
+    <ul>
+        {% for producto in productos %}
+        <li>{{ producto.nombre }} - {{ producto.descripcion }} - {{ producto.precio }}</li>
+        
+        {% endfor %}
+    </ul>
+</body>
+
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Productos</title>
+</head>
+
+<body>
+    <h1>Lista de Productos con Proveedor</h1>
+    <ul>
+        {% for producto_info in productos_con_proveedor %}
+        <li>
+            <strong>Producto:</strong> {{ producto_info.producto.nombre }} - {{ producto_info.producto.descripcion
+            }}<br>
+            <strong>Proveedor:</strong> {{ producto_info.proveedor.nombre_tienda }}
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+
+</html>

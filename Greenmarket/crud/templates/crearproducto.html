@@ -1,23 +1,23 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="{% static 'js/custom.js' %}"></script>
-    <title>Crear Perfil Proveedor</title>
+    <title>Cargar Producto</title>
 </head>
 
 <body>
-    <h1>Crear Perfil Proveedor</h1>
-    <form method="post">
+    <h1>Cargar Producto</h1>
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
-        <input type="submit" value="Guardar">
-        <a href="javascript:history.back()">Volver atrás</a>
+        <button type="submit">Guardar</button>
     </form>
     <script src="{% static 'js/logout_timer.js' %}"></script>
 </body>
+
 
 </html>

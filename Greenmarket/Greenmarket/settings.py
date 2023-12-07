@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -123,9 +124,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
-LOGIN_URL = "/inisiosesion"
+LOGIN_URL = "iniciosesion/"
+
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -138,3 +144,9 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",  # Por defecto, usa ModelBackend
     "crud.CustomBackend.CustomBackend",  # Agrega tu propio backend personalizado si lo tienes
 ]
+
+# Tiempo de duración de la sesión en segundos (configúralo según tus necesidades)
+SESSION_COOKIE_AGE = 3600  # 1 hora en este ejemplo
+
+# Configuración para que la sesión expire al cerrar el navegador
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

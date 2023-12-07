@@ -1,8 +1,10 @@
+{% load static %}
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <title>Perfil Cliente</title>
+    <script src="{% static 'js/custom.js' %}"></script>
 </head>
 
 <body>
@@ -11,8 +13,14 @@
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Guardar">
-        <a href="javascript:history.back()">Volver atrás</a>
+        <a href="/">home</a>
     </form>
+    <script>
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1);
+        };
+    </script>
 </body>
 
 </html>
