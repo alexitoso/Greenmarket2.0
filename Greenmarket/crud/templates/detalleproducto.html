@@ -22,6 +22,8 @@
         {% else %}
         <p>No hay imagen disponible para este producto.</p>
         {% endif %}
+        <a href="{% url 'agregar' producto.id_producto %}" class="btn-primary">agregar al
+            carrito</a>
     </div>
 </body>
 <script src="{% static 'js/logout_timer.js' %}"></script>

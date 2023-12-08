@@ -169,17 +169,13 @@ class DjangoSession(models.Model):
 class Envio(models.Model):
     id_envio = models.BigAutoField(primary_key=True)
     descripcion = models.CharField(max_length=50)
-    direccion = models.CharField(max_length=50)
-    ncomuna = models.CharField(max_length=50)
-    nregion = models.CharField(max_length=50)
-    enviopagado = models.CharField(max_length=1)
-    tipo_envio = models.CharField(max_length=50)
-    peso = models.BigIntegerField()
-    fecha_envio = models.DateField()
 
     class Meta:
         managed = False
         db_table = "envio"
+
+    def __str__(self):
+        return self.descripcion
 
 
 class EstadoCivil(models.Model):
@@ -221,17 +217,14 @@ class LoginUser(models.Model):
 class OrdenCompra(models.Model):
     id_compra = models.BigAutoField(primary_key=True)
     id_proveedor = models.BigIntegerField()
-    id_envio = models.ForeignKey(Envio, models.DO_NOTHING, db_column="id_envio")
+    id_envio = models.ForeignKey("Envio", models.DO_NOTHING, db_column="id_envio")
     id_pago = models.ForeignKey("Pago", models.DO_NOTHING, db_column="id_pago")
-    id_producto = models.ForeignKey(
-        "Producto", models.DO_NOTHING, db_column="id_producto"
-    )
     id_cliente = models.BigIntegerField()
     fecha_compra = models.CharField(max_length=50)
     cant_compra = models.BigIntegerField()
-    valor_neto = models.BigIntegerField()
-    iva = models.BigIntegerField()
     valor_total = models.BigIntegerField()
+    valor_neto = models.FloatField()
+    iva = models.FloatField()
 
     class Meta:
         managed = False
@@ -291,6 +284,9 @@ class Proveedor(models.Model):
     class Meta:
         managed = False
         db_table = "proveedor"
+
+    def __str__(self):
+        return self.nombre_tienda
 
 
 class Producto(models.Model):

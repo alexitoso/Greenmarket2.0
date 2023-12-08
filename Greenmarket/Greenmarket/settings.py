@@ -64,6 +64,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "crud.context_processor.total_carrito",
             ],
         },
     },
@@ -146,7 +147,13 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # Tiempo de duración de la sesión en segundos (configúralo según tus necesidades)
-SESSION_COOKIE_AGE = 3600  # 1 hora en este ejemplo
-
+SESSION_COOKIE_AGE = 3600  # 1 hora
 # Configuración para que la sesión expire al cerrar el navegador
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# transbank
+TRANSBANK_API_KEY = "597055555532"
+TRANSBANK_SHARED_SECRET = (
+    "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C"
+)
+TRANSBANK_INTEGRATION_TYPE = "TEST"  # Cambia a 'LIVE' en producción

@@ -26,8 +26,7 @@ urlpatterns = [
     path("", views.home, name="home"),
     path("registro/", views.registro, name="registro"),
     path("iniciosesion/", views.iniciosesion, name="iniciosesion"),
-    path("producto", views.producto, name="producto"),
-    path("tienda/", views.mostrar_productos, name="tienda"),
+    # path("tienda/", views.mostrar_productos, name="tienda"),
     path("cerrarsesion/", views.signout, name="cerrarsesion"),
     # cliente
     path(
@@ -69,6 +68,14 @@ urlpatterns = [
         views.eliminar_producto,
         name="eliminar_producto",
     ),
+    # carrito -------------------
+    path("carro/", views.mostrar_productos, name="carro"),
+    path("agregar/<int:producto_id>/", views.agregar_carro, name="agregar"),
+    path("eliminar/<int:producto_id>/", views.eliminar_carro, name="eliminar"),
+    path("restar/<int:producto_id>/", views.restar_carro, name="restar"),
+    path("limpiar/", views.limpiar_carrito, name="limpiar"),
+    # orden de compra
+    path("ordencompra", views.confirmar_compra, name="orden"),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

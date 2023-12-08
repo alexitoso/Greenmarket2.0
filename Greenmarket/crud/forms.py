@@ -1,10 +1,14 @@
+from typing import Required
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate
 from .models import (
     Comuna,
     CustomUser,
+    Envio,
     EstadoCivil,
+    OrdenCompra,
+    Pago,
     Producto,
     Proveedor,
     Cliente,
@@ -28,70 +32,6 @@ class CustomAuthenticationForm(AuthenticationForm):
     class Meta:
         model = CustomUser
         fields = ("username", "password")
-
-
-# # class RegistroForm(forms.ModelForm):
-# #     password = forms.CharField(
-# #         widget=forms.PasswordInput(), label="Password", max_length=100
-# #     )
-# #     password_confirmation = forms.CharField(
-# #         widget=forms.PasswordInput(), label="Confirm Password", max_length=100
-# #     )
-# #     tipo_perfil = forms.ChoiceField(
-# #         choices=[("proveedor", "Proveedor"), ("cliente", "Cliente")],
-# #         label="Tipo de Perfil",
-# #     )
-
-# #     class Meta:
-# #         model = CustomUser  # Asocia el formulario con el modelo CustomUser
-# #         fields = ["username", "password", "password_confirmation", "tipo_perfil"]
-
-# #     def clean(self):
-# #         cleaned_data = super().clean()
-# #         password = cleaned_data.get("password")
-# #         password_confirmation = cleaned_data.get("password_confirmation")
-
-# #         if password != password_confirmation:
-# #             raise forms.ValidationError("Las contraseñas no coinciden.")
-
-# #         return cleaned_data
-
-
-# # class CustomAuthenticationForm(AuthenticationForm):
-# #     def __init__(self, *args, **kwargs):
-# #         super().__init__(*args, **kwargs)
-# #         # Personaliza los campos si es necesario
-# #         # Ejemplo: cambiar etiquetas o agregar clases CSS
-# #         self.fields["username"].label = "Nombre de usuario"
-# #         self.fields["password"].label = "Contraseña"
-# #         self.fields["password"].widget.attrs.update({"class": "password-input"})
-# #         # Puedes agregar más personalizaciones aquí
-
-# #     def clean(self):
-# #         cleaned_data = super().clean()
-# #         # Agrega validaciones adicionales si es necesario
-# #         # Por ejemplo, verificación de campos, autenticación personalizada, etc.
-# #         return cleaned_data
-
-
-# class LoginForm(forms.Form):
-#     username = forms.CharField(label="Usuario", max_length=100)
-#     password = forms.CharField(widget=forms.PasswordInput(), label="Contraseña")
-
-#     def clean(self):
-#         cleaned_data = super().clean()
-#         username = cleaned_data.get("username")
-#         password = cleaned_data.get("password")
-
-#         if username is not None and password:
-#             user = authenticate(username=username, password=password)
-
-#             if user is None or not user.is_active:
-#                 raise forms.ValidationError(
-#                     "Nombre de usuario o contraseña incorrectos."
-#                 )
-
-#         return cleaned_data
 
 
 # intento 1
@@ -171,3 +111,33 @@ class ProductoForm(forms.ModelForm):
             "stock",
             "imagen",
         ]
+
+
+# orden de compra
+
+
+class OrdenCompraForm(forms.ModelForm):
+    class Meta:
+        model = OrdenCompra
+        fields = [
+            "cant_compra",
+            "valor_neto",
+            "iva",
+            "valor_total",
+            "id_cliente",
+            "id_proveedor",
+            "fecha_compra",
+            "id_envio",
+            "id_pago",
+        ]
+        widgets = {
+            "id_proveedor": forms.TextInput(attrs={"readonly": "readonly"}),
+            "id_envio": forms.Select(),
+            "id_pago": forms.Select(),
+            "id_cliente": forms.TextInput(attrs={"readonly": "readonly"}),
+            "fecha_compra": forms.DateInput(attrs={"readonly": "readonly"}),
+            "cant_compra": forms.TextInput(attrs={"readonly": "readonly"}),
+            "valor_total": forms.TextInput(attrs={"readonly": "readonly"}),
+            "valor_neto": forms.TextInput(attrs={"readonly": "readonly"}),
+            "iva": forms.TextInput(attrs={"readonly": "readonly"}),
+        }

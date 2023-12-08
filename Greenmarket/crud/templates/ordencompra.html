@@ -1,0 +1,15 @@
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <select name="id_envio">
+        {% for envio in envios %}
+        <option value="{{ envio.pk }}">{{ envio.nombre }}</option>
+        {% endfor %}
+    </select>
+    <select name="id_pago">
+        {% for pago in pagos %}
+        <option value="{{ pago.pk }}">{{ pago.nombre }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Confirmar compra</button>
+</form>
