@@ -1,5 +1,6 @@
 from datetime import date
 from decimal import ROUND_HALF_UP, Decimal
+from venv import logger
 from django.contrib import messages
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, render
@@ -187,7 +188,18 @@ def editar_perfil_proveedor(request):
 
 # crud de productos como proveedor
 def listar_productos(request):
-    productos = Producto.objects.all()
+    usuario_actual = request.user
+
+    # Obtener el proveedor asociado al usuario actual
+    # Obtener el usuario actual
+    usuario_actual = request.user
+
+    # Obtener el proveedor asociado al usuario actual
+    proveedor_usuario = get_object_or_404(Proveedor, id_usuario=usuario_actual)
+
+    # Obtener los productos asociados al proveedor del usuario actual
+    productos = Producto.objects.filter(id_proveedor=proveedor_usuario)
+
     return render(request, "listarproductos.html", {"productos": productos})
 
 
@@ -238,9 +250,18 @@ def mostrar_productos(request):
 
 # MOSTRAR PRODUCTOS EN LA TIENDA PARA PROVEEDORES
 def mostrar_productosP(request):
-    proveedores_con_productos = Proveedor.objects.filter(
-        producto__isnull=False
-    ).distinct()
+    usuario_actual = request.user
+    proveedor_usuario_actual = get_object_or_404(
+        Proveedor, id_usuario=usuario_actual
+    )  # Suponiendo que esto devuelve el proveedor del usuario actual
+
+    # Obtener todos los proveedores con productos excepto el proveedor del usuario actual
+    proveedores_con_productos = (
+        Proveedor.objects.exclude(id_proveedor=proveedor_usuario_actual.id_proveedor)
+        .filter(producto__isnull=False)
+        .distinct()
+    )
+
     return render(request, "tiendaP.html", {"proveedores": proveedores_con_productos})
 
 
@@ -388,52 +409,56 @@ def obtener_proveedor_actual(request):
 # trueque
 def trueque(request, proveedor_id, producto_id):
     proveedor_actual = obtener_proveedor_actual(request)
-    if proveedor_actual is not None:
+    if proveedor_actual:
         proveedor_actual_id = proveedor_actual.id_proveedor
-
-        proveedor_seleccionado = get_object_or_404(Proveedor, id_proveedor=proveedor_id)
-        producto = get_object_or_404(Producto, id_producto=producto_id)
-
-        usuario_actual_id = obtener_id_usuario_actual(request)
-        if usuario_actual_id is not None:
-            productos_sesion = Producto.objects.filter(
-                id_proveedor__id_usuario=usuario_actual_id
-            )
-
-        productos_proveedor = Producto.objects.filter(
-            id_proveedor=proveedor_seleccionado
-        )
         proveedor_seleccionado = get_object_or_404(Proveedor, id_proveedor=proveedor_id)
         producto_seleccionado = get_object_or_404(Producto, id_producto=producto_id)
         direccion_proveedor_destino = producto_seleccionado.id_proveedor.direccion
         direccion_proveedor_actual = obtener_direccion_proveedor_actual(request)
         fecha_actual = date.today()
 
+        # Obtener los productos para los campos prod_enviado y prod_recibido
+        opciones_prod_enviado = Producto.objects.filter(id_proveedor=proveedor_actual)
+
+        opciones_prod_recibido = Producto.objects.filter(
+            id_proveedor=proveedor_seleccionado
+        )
+        print(opciones_prod_enviado)
+        print(opciones_prod_recibido)
+
         if request.method == "POST":
             form = TruequeForm(request.POST)
             if form.is_valid():
                 orden_trueque = form.save(commit=False)
-                orden_trueque.direccion_origen = direccion_proveedor_actual
-                orden_trueque.direccion_destino = direccion_proveedor_destino
+                orden_trueque.origen = direccion_proveedor_actual
+                orden_trueque.destino = direccion_proveedor_destino
                 orden_trueque.itrueque = proveedor_actual_id
                 orden_trueque.dtrueque = proveedor_seleccionado.id_proveedor
                 orden_trueque.fecha_trueque = fecha_actual
+                orden_trueque.prod_enviado = int(request.POST.get("prod_enviado"))
+                orden_trueque.prod_recibido = int(request.POST.get("prod_recibido"))
 
-                # Completa los otros campos según tu lógica
+                logger.info(
+                    "Datos del formulario antes de guardar: %s", form.cleaned_data
+                )
 
                 orden_trueque.save()
-                return redirect("inicio")
+                logger.info("¡Formulario guardado exitosamente!")
+
+                return redirect("home")
         else:
             form = TruequeForm(
                 initial={
-                    "direccion_origen": direccion_proveedor_actual,
-                    "direccion_destino": direccion_proveedor_destino,
+                    "origen": direccion_proveedor_actual,
+                    "destino": direccion_proveedor_destino,
                     "itrueque": proveedor_actual_id,
                     "dtrueque": proveedor_seleccionado.id_proveedor,
                     "fecha_trueque": fecha_actual,
-                    # Agrega otros campos aquí con sus valores iniciales
                 }
             )
+            form.fields["prod_enviado"].queryset = opciones_prod_enviado
+            form.fields["prod_recibido"].queryset = opciones_prod_recibido
+            print(request.POST)
     else:
         form = TruequeForm()
 

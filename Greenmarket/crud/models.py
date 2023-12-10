@@ -241,8 +241,8 @@ class OrdenTrueque(models.Model):
     itrueque = models.CharField(max_length=50)
     dtrueque = models.CharField(max_length=50)
     fecha_trueque = models.DateField()
-    prod_enviado = models.CharField(max_length=50)
-    prod_recibido = models.CharField(max_length=50)
+    prod_enviado = models.BigIntegerField()
+    prod_recibido = models.BigIntegerField()
 
     class Meta:
         managed = False

@@ -1,5 +1,4 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -8,12 +7,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil de Proveedor</title>
     <a href="javascript:history.back()">Volver atrás</a>
+    <a href="/">home</a>
 </head>
 
 <body>
     <h1>Tiendas con Productos</h1>
     <ul>
         {% for proveedor in proveedores %}
+        <!-- Verificar si el proveedor es diferente al usuario actual -->
+        {% if proveedor.id_proveedor != usuario_actual.proveedor.id_proveedor %}
         <!-- Detalles del proveedor -->
         <h2>{{ proveedor.nombre_tienda }}</h2>
         <!-- Listado de productos -->
@@ -24,15 +26,15 @@
                     {{ producto.nombre }} - Precio: {{ producto.precio }}
                 </a>
             </li>
-            <a href="{% url 'trueque' proveedor_id=proveedor.id_proveedor producto_id=producto.id_producto %}">Solicitar
-                trueque</a>
+            <li>
+                <a href="{% url 'trueque' proveedor_id=proveedor.id_proveedor producto_id=producto.id_producto %}">Solicitar
+                    trueque</a>
+            </li>
             {% endfor %}
         </ul>
-
+        {% endif %}
         {% endfor %}
     </ul>
-
-
 </body>
 <script src="{% static 'js/logout_timer.js' %}"></script>
 

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trueque</title>
+    <a href="/">home</a>
 </head>
 
 <body>
@@ -35,14 +36,16 @@
             {{ form.fecha_trueque }}
             <label for="id_prod_enviado">Producto que se ofrece:</label>
             <select name="prod_enviado" id="id_prod_enviado">
-                {% for choice in form.prod_enviado.choices %}
-                <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                {% for option in form.prod_enviado.field.queryset %}
+                <option value="{{ option.id }}">{{ option.nombre }}</option>
+                <!-- Reemplaza 'nombre' por el nombre del campo que quieras mostrar -->
                 {% endfor %}
             </select>
             <label for="id_prod_recibido">Producto que se solicita:</label>
             <select name="prod_recibido" id="id_prod_recibido">
-                {% for choice in form.prod_recibido.choices %}
-                <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                {% for option in form.prod_recibido.field.queryset %}
+                <option value="{{ option.id }}">{{ option.nombre }}</option>
+                <!-- Reemplaza 'nombre' por el nombre del campo que quieras mostrar -->
                 {% endfor %}
             </select>
             <!-- Continúa con el resto de los campos -->

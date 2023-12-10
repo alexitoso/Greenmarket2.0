@@ -146,6 +146,22 @@ class OrdenCompraForm(forms.ModelForm):
 
 
 class TruequeForm(forms.ModelForm):
+    def __init__(
+        self, *args, proveedor_actual_id=None, proveedor_seleccionado=None, **kwargs
+    ):
+        super(TruequeForm, self).__init__(*args, **kwargs)
+        if proveedor_actual_id is not None and proveedor_seleccionado is not None:
+            # Filtrar productos para prod_enviado y prod_recibido según los proveedores
+            opciones_prod_enviado = Producto.objects.filter(
+                id_proveedor=proveedor_actual_id
+            )
+            opciones_prod_recibido = Producto.objects.filter(
+                id_proveedor=proveedor_seleccionado.id_proveedor
+            )
+
+            self.fields["prod_enviado"].queryset = opciones_prod_enviado
+            self.fields["prod_recibido"].queryset = opciones_prod_recibido
+
     class Meta:
         model = OrdenTrueque
         fields = [
@@ -161,30 +177,11 @@ class TruequeForm(forms.ModelForm):
             "prod_recibido",  # el producto solicitado que quiere el solicitante
         ]
         widgets = {
-            "direccion_origen": forms.TextInput(attrs={"readonly": "readonly"}),
-            "direccion_destino": forms.TextInput(attrs={"readonly": "readonly"}),
+            "origen": forms.TextInput(attrs={"readonly": "readonly"}),
+            "destino": forms.TextInput(attrs={"readonly": "readonly"}),
             "itrueque": forms.TextInput(attrs={"readonly": "readonly"}),
             "dtrueque": forms.TextInput(attrs={"readonly": "readonly"}),
             "fecha_trueque": forms.TextInput(attrs={"readonly": "readonly"}),
             "prod_enviado": forms.Select(),
             "prod_recibido": forms.Select(),
         }
-
-    # def __init__(self, *args, **kwargs):
-    #     productos_sesion = kwargs.pop("productos_sesion", None)
-    #     productos_proveedor = kwargs.pop("productos_proveedor", None)
-
-    #     super(TruequeForm, self).__init__(*args, **kwargs)
-
-    #     self.fields["origen"] = forms.CharField(max_length=50)
-    #     self.fields["destino"] = forms.CharField(max_length=50)
-    #     self.fields["descripcion"] = forms.CharField(max_length=50)
-    #     self.fields["cant_recibida"] = forms.IntegerField()
-    #     self.fields["cant_enviada"] = forms.IntegerField()
-    #     self.fields["itrueque"] = forms.CharField(max_length=50)
-    #     self.fields["dtrueque"] = forms.CharField(max_length=50)
-    #     self.fields["fecha_trueque"] = forms.DateField()
-    #     self.fields["prod_enviado"] = forms.ModelChoiceField(queryset=productos_sesion)
-    #     self.fields["prod_recibido"] = forms.ModelChoiceField(
-    #         queryset=productos_proveedor
-    #     )
