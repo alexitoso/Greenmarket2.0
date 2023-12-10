@@ -26,7 +26,9 @@ urlpatterns = [
     path("", views.home, name="home"),
     path("registro/", views.registro, name="registro"),
     path("iniciosesion/", views.iniciosesion, name="iniciosesion"),
-    # path("tienda/", views.mostrar_productos, name="tienda"),
+    # tienda para proveedores
+    path("tiendaP/", views.mostrar_productosP, name="tiendaP"),
+    # cerrar sesion
     path("cerrarsesion/", views.signout, name="cerrarsesion"),
     # cliente
     path(
@@ -76,6 +78,10 @@ urlpatterns = [
     path("limpiar/", views.limpiar_carrito, name="limpiar"),
     # orden de compra
     path("ordencompra", views.confirmar_compra, name="orden"),
+    # trueque
+    path(
+        "trueque/<int:proveedor_id>/<int:producto_id>/", views.trueque, name="trueque"
+    ),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

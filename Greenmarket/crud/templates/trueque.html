@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trueque</title>
+</head>
+
+<body>
+    <!-- Aquí tu contenido actual -->
+    <h1>Bienvenido al Trueque</h1>
+
+    <!-- Muestra el formulario -->
+    <div>
+        <h2>Solicitar Trueque</h2>
+        <form method="post">
+            {% csrf_token %}
+            <label for="id_origen">Origen:</label>
+            {{ form.origen }}
+            <label for="id_destino">Destino:</label>
+            {{ form.destino }}
+            <!-- Agrega los demás campos del formulario -->
+            <label for="id_descripcion">Descripción:</label>
+            {{ form.descripcion }}
+            <label for="id_cant_recibida">Cantidad Recibida:</label>
+            {{ form.cant_recibida }}
+            <label for="id_cant_enviada">Cantidad Enviada:</label>
+            {{ form.cant_enviada }}
+            <label for="itrueque">Solicitante del trueque:</label>
+            {{ form.itrueque }}
+            <label for="dtrueque">Receptor del trueque:</label>
+            {{ form.dtrueque }}
+            <label for="fechatrueque">Fecha de la solicitud:</label>
+            {{ form.fecha_trueque }}
+            <label for="id_prod_enviado">Producto que se ofrece:</label>
+            <select name="prod_enviado" id="id_prod_enviado">
+                {% for choice in form.prod_enviado.choices %}
+                <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                {% endfor %}
+            </select>
+            <label for="id_prod_recibido">Producto que se solicita:</label>
+            <select name="prod_recibido" id="id_prod_recibido">
+                {% for choice in form.prod_recibido.choices %}
+                <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                {% endfor %}
+            </select>
+            <!-- Continúa con el resto de los campos -->
+            <button type="submit">Enviar Solicitud de Trueque</button>
+        </form>
+    </div>
+</body>
+
+</html>

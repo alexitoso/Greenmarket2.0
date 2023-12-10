@@ -7,7 +7,7 @@ class CustomBackend(ModelBackend):
         user_model = get_user_model()
         try:
             user = user_model.objects.get(username=username)
-            if user.check_password(password):
+            if user.check_password(password):  # type: ignore
                 return user
         except user_model.DoesNotExist:
             return None

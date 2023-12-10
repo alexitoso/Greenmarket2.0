@@ -19,6 +19,7 @@ from .forms import (
     OrdenCompraForm,
     ProductoForm,
     ProveedorForm,
+    TruequeForm,
     # RegistroForm,
 )
 
@@ -29,6 +30,7 @@ from .models import (
     Envio,
     EstadoCivil,
     OrdenCompra,
+    OrdenTrueque,
     Pago,
     Producto,
     Sexo,
@@ -234,107 +236,21 @@ def mostrar_productos(request):
     return render(request, "tienda.html", {"proveedores": proveedores_con_productos})
 
 
+# MOSTRAR PRODUCTOS EN LA TIENDA PARA PROVEEDORES
+def mostrar_productosP(request):
+    proveedores_con_productos = Proveedor.objects.filter(
+        producto__isnull=False
+    ).distinct()
+    return render(request, "tiendaP.html", {"proveedores": proveedores_con_productos})
+
+
+# <!-- {% url 'solicitud_trueque' producto.id_producto %} agregar al html cuando funcione el boton
+
+
 # detalle producto como cliente
 def detalle_producto(request, producto_id):
     producto = Producto.objects.get(id_producto=producto_id)
     return render(request, "detalleproducto.html", {"producto": producto})
-
-
-# carrito de compra
-
-
-# def agregar_al_carrito(request, producto_id, cantidad):
-#     producto = get_object_or_404(Producto, id_producto=producto_id)
-
-#     # Verificar si hay suficientes existencias para la cantidad deseada
-#     if producto.stock >= cantidad:
-#         # Agregar al carrito en la sesión del usuario
-#         if "carrito" not in request.session:
-#             request.session["carrito"] = {}
-
-#         carrito = request.session["carrito"]
-
-#         if producto_id not in carrito:
-#             carrito[producto_id] = {
-#                 "id_producto": producto.id_producto,
-#                 "nombre": producto.nombre,
-#                 "precio": producto.precio,
-#                 # Otros detalles del producto que quieras guardar en el carrito
-#                 "cantidad": cantidad,  # Guardar la cantidad en el carrito
-#             }
-#             request.session.modified = True
-
-#             # Reducir la cantidad en el stock de la base de datos
-#             producto.stock -= cantidad
-#             producto.save()
-
-#         return redirect(
-#             "carrito"
-#         )  # Redirigir al carrito después de agregar el producto
-#     else:
-#         messages.error(request, "No hay suficientes existencias de este producto.")
-#         return redirect("carrito")  # Redirigir al carrito con el mensaje de error
-
-# #orden de compra
-# def crear_orden_compra(request):
-#     if request.method == "POST":
-#         # Obtener datos del formulario (id_envio, id_pago, lista de productos, etc.)
-#         lista_productos = request.POST.getlist('productos')  # Ejemplo, obtener una lista de productos
-#         producto_id = request.POST.get("producto_id")
-#         producto = Producto.objects.get(id=producto_id)
-#         precio = producto.precio
-#         iva_porcentaje = 19  # Supongamos un 19% de IVA
-#         # Calcular valores de la orden de compra (valor neto, iva, precio total, etc.)
-#         valor_neto = ((precio * (iva_porcentaje / 100))*(lista_productos))
-#         iva = calcular_iva(valor_neto)
-#         precio_total = valor_neto + iva
-
-#         # Obtener el ID del cliente desde la sesión (suponiendo que está autenticado)
-#         id_cliente = request.user.id  # Asegúrate de tener acceso al ID del cliente autenticado
-
-#         # Crear la orden de compra y guardarla en la base de datos
-#         orden_compra = OrdenCompra.objects.create(
-#             id_cliente=id_cliente,
-#             id_envio=id_envio,
-#             id_pago=id_pago,
-#             valor_neto=valor_neto,
-#             iva=iva,
-#             precio_total=precio_total
-#         )
-
-#         # Asociar los productos a la orden de compra (asumiendo que 'lista_productos' contiene los IDs de los productos)
-#         for producto_id in lista_productos:
-#             producto = Producto.objects.get(pk=producto_id)
-#             orden_compra.productos.add(producto)
-
-#         return redirect('detalle_orden_compra', pk=orden_compra.pk)  # Redirigir a la página de detalle de la orden
-#     else:
-#         # Lógica para mostrar el formulario para seleccionar envío, pago y productos
-#         # ...
-
-#     return render(request, 'crear_orden_compra.html', context)
-
-
-# def ver_carrito(request):
-#     carrito = request.session.get("carrito", {})
-#     productos_carrito = carrito.values()
-#     total = sum(item["precio"] for item in productos_carrito)
-
-#     return render(
-#         request,
-#         "carrito.html",
-#         {"productos_carrito": productos_carrito, "total": total},
-#     )
-
-
-# def eliminar_del_carrito(request, producto_id):
-#     if "carrito" in request.session:
-#         carrito = request.session["carrito"]
-#         if producto_id in carrito:
-#             del carrito[producto_id]
-#             request.session.modified = True
-
-#     return redirect("carrito")
 
 
 # carro
@@ -366,29 +282,6 @@ def limpiar_carrito(request):
 
 
 # orden de compra
-# def confirmar_compra(request):
-#     # Obtener datos del carrito desde la sesión
-#     carrito = request.session.get("carrito", {})
-
-#     # Calcular los valores para la orden de compra
-#     total_cantidad = sum(item["cantidad"] for item in carrito.values())
-#     valor_neto = sum(item["acumulado"] for item in carrito.values())
-#     iva = Decimal("0.19") * valor_neto  # Suponiendo un IVA del 19%
-#     valor_total = valor_neto + iva
-
-#     # Rellenar el formulario con los valores calculados
-#     form = OrdenCompraForm(
-#         initial={
-#             "cant_compra": total_cantidad,
-#             "valor_neto": valor_neto,
-#             "iva": iva,
-#             "valor_total": valor_total,
-#         }
-#     )
-
-#     context = {"form": form}
-
-#     return render(request, "ordencompra.html", context)
 
 
 def confirmar_compra(request):
@@ -456,3 +349,92 @@ def confirmar_compra(request):
 
     context = {"form": form}
     return render(request, "ordencompra.html", context)
+
+
+# obtener datos
+def obtener_direccion_proveedor_actual(request):
+    # Verificar si el usuario está autenticado
+    if request.user.is_authenticated:
+        # Obtener el proveedor correspondiente al usuario actual
+        try:
+            proveedor_actual = Proveedor.objects.get(id_usuario=request.user)
+            return proveedor_actual.direccion
+        except Proveedor.DoesNotExist:
+            # Manejar el caso en el que no se encuentre el proveedor
+            return None
+    else:
+        # Manejar el caso en el que el usuario no está autenticado
+        return None
+
+
+def obtener_id_usuario_actual(request):
+    # Verificar si el usuario está autenticado
+    if request.user.is_authenticated:
+        # Obtener el ID del usuario actual
+        usuario_actual_id = request.user.id_usuario
+        return usuario_actual_id
+    return None  # Retornar None si el usuario no está autenticado
+
+
+def obtener_proveedor_actual(request):
+    if request.user.is_authenticated:
+        proveedor_actual = get_object_or_404(
+            Proveedor, id_usuario=request.user.id_usuario
+        )
+        return proveedor_actual
+    return None  # Retornar None si el usuario no está autenticado
+
+
+# trueque
+def trueque(request, proveedor_id, producto_id):
+    proveedor_actual = obtener_proveedor_actual(request)
+    if proveedor_actual is not None:
+        proveedor_actual_id = proveedor_actual.id_proveedor
+
+        proveedor_seleccionado = get_object_or_404(Proveedor, id_proveedor=proveedor_id)
+        producto = get_object_or_404(Producto, id_producto=producto_id)
+
+        usuario_actual_id = obtener_id_usuario_actual(request)
+        if usuario_actual_id is not None:
+            productos_sesion = Producto.objects.filter(
+                id_proveedor__id_usuario=usuario_actual_id
+            )
+
+        productos_proveedor = Producto.objects.filter(
+            id_proveedor=proveedor_seleccionado
+        )
+        proveedor_seleccionado = get_object_or_404(Proveedor, id_proveedor=proveedor_id)
+        producto_seleccionado = get_object_or_404(Producto, id_producto=producto_id)
+        direccion_proveedor_destino = producto_seleccionado.id_proveedor.direccion
+        direccion_proveedor_actual = obtener_direccion_proveedor_actual(request)
+        fecha_actual = date.today()
+
+        if request.method == "POST":
+            form = TruequeForm(request.POST)
+            if form.is_valid():
+                orden_trueque = form.save(commit=False)
+                orden_trueque.direccion_origen = direccion_proveedor_actual
+                orden_trueque.direccion_destino = direccion_proveedor_destino
+                orden_trueque.itrueque = proveedor_actual_id
+                orden_trueque.dtrueque = proveedor_seleccionado.id_proveedor
+                orden_trueque.fecha_trueque = fecha_actual
+
+                # Completa los otros campos según tu lógica
+
+                orden_trueque.save()
+                return redirect("inicio")
+        else:
+            form = TruequeForm(
+                initial={
+                    "direccion_origen": direccion_proveedor_actual,
+                    "direccion_destino": direccion_proveedor_destino,
+                    "itrueque": proveedor_actual_id,
+                    "dtrueque": proveedor_seleccionado.id_proveedor,
+                    "fecha_trueque": fecha_actual,
+                    # Agrega otros campos aquí con sus valores iniciales
+                }
+            )
+    else:
+        form = TruequeForm()
+
+    return render(request, "trueque.html", {"form": form})

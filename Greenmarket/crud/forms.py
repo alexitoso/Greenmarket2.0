@@ -1,4 +1,5 @@
 from typing import Required
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate
@@ -8,6 +9,7 @@ from .models import (
     Envio,
     EstadoCivil,
     OrdenCompra,
+    OrdenTrueque,
     Pago,
     Producto,
     Proveedor,
@@ -141,3 +143,48 @@ class OrdenCompraForm(forms.ModelForm):
             "valor_neto": forms.TextInput(attrs={"readonly": "readonly"}),
             "iva": forms.TextInput(attrs={"readonly": "readonly"}),
         }
+
+
+class TruequeForm(forms.ModelForm):
+    class Meta:
+        model = OrdenTrueque
+        fields = [
+            "origen",  # direccion del que solicita el trueque
+            "destino",  # direccion del que recibe el trueque
+            "descripcion",  # algun comentario que se deba saber sobre el producto
+            "cant_recibida",  # cantidad del producto que se solicita
+            "cant_enviada",  # cantidad del producto que se envia para el intercambio
+            "itrueque",  # quien solicita el trueque id_proveedor
+            "dtrueque",  # quien recibe el trueque id_proveedor de la tienda
+            "fecha_trueque",  # fecha al momento de hacer la solicitud
+            "prod_enviado",  # el id del producto que se envia a cambio del solicitado
+            "prod_recibido",  # el producto solicitado que quiere el solicitante
+        ]
+        widgets = {
+            "direccion_origen": forms.TextInput(attrs={"readonly": "readonly"}),
+            "direccion_destino": forms.TextInput(attrs={"readonly": "readonly"}),
+            "itrueque": forms.TextInput(attrs={"readonly": "readonly"}),
+            "dtrueque": forms.TextInput(attrs={"readonly": "readonly"}),
+            "fecha_trueque": forms.TextInput(attrs={"readonly": "readonly"}),
+            "prod_enviado": forms.Select(),
+            "prod_recibido": forms.Select(),
+        }
+
+    # def __init__(self, *args, **kwargs):
+    #     productos_sesion = kwargs.pop("productos_sesion", None)
+    #     productos_proveedor = kwargs.pop("productos_proveedor", None)
+
+    #     super(TruequeForm, self).__init__(*args, **kwargs)
+
+    #     self.fields["origen"] = forms.CharField(max_length=50)
+    #     self.fields["destino"] = forms.CharField(max_length=50)
+    #     self.fields["descripcion"] = forms.CharField(max_length=50)
+    #     self.fields["cant_recibida"] = forms.IntegerField()
+    #     self.fields["cant_enviada"] = forms.IntegerField()
+    #     self.fields["itrueque"] = forms.CharField(max_length=50)
+    #     self.fields["dtrueque"] = forms.CharField(max_length=50)
+    #     self.fields["fecha_trueque"] = forms.DateField()
+    #     self.fields["prod_enviado"] = forms.ModelChoiceField(queryset=productos_sesion)
+    #     self.fields["prod_recibido"] = forms.ModelChoiceField(
+    #         queryset=productos_proveedor
+    #     )

@@ -1,0 +1,39 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Proveedor</title>
+    <a href="javascript:history.back()">Volver atrás</a>
+</head>
+
+<body>
+    <h1>Tiendas con Productos</h1>
+    <ul>
+        {% for proveedor in proveedores %}
+        <!-- Detalles del proveedor -->
+        <h2>{{ proveedor.nombre_tienda }}</h2>
+        <!-- Listado de productos -->
+        <ul>
+            {% for producto in proveedor.producto_set.all %}
+            <li>
+                <a href="{% url 'detalleproducto' producto.id_producto %}">
+                    {{ producto.nombre }} - Precio: {{ producto.precio }}
+                </a>
+            </li>
+            <a href="{% url 'trueque' proveedor_id=proveedor.id_proveedor producto_id=producto.id_producto %}">Solicitar
+                trueque</a>
+            {% endfor %}
+        </ul>
+
+        {% endfor %}
+    </ul>
+
+
+</body>
+<script src="{% static 'js/logout_timer.js' %}"></script>
+
+</html>

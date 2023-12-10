@@ -22,8 +22,14 @@
         {% else %}
         <p>No hay imagen disponible para este producto.</p>
         {% endif %}
+        {% if request.user.tipo_perfil == 'cliente' %}
         <a href="{% url 'agregar' producto.id_producto %}" class="btn-primary">agregar al
             carrito</a>
+        {% else %}
+
+        <a href="#" class="btn-primary">Agregar a solicitud de
+            trueque</a>
+        {% endif %}
     </div>
 </body>
 <script src="{% static 'js/logout_timer.js' %}"></script>
