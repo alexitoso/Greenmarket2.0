@@ -41,6 +41,12 @@
     <li>
         <a href="{% url 'tiendaP' %}">Productos</a>
     </li>
+    <li>
+        <a href="{% url 'mis_solicitudes' %}">Solicitudes de trueque emitidas</a>
+    </li>
+    <li>
+        <a href="{% url 'solicitudes_recibidas' %}">Solicitudes de trueque recibidas</a>
+    </li>
     {% else %}
     <li>
         <a href="{% url 'perfilP' %}">Crear perfil de proveedor</a>

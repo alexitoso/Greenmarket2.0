@@ -306,26 +306,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name="OrdenTrueque",
-            fields=[
-                ("id_otrueque", models.BigAutoField(primary_key=True, serialize=False)),
-                ("origen", models.CharField(max_length=50)),
-                ("destino", models.CharField(max_length=50)),
-                ("descripcion", models.CharField(max_length=50)),
-                ("cant_recibida", models.BigIntegerField()),
-                ("cant_enviada", models.BigIntegerField()),
-                ("itrueque", models.CharField(max_length=50)),
-                ("dtrueque", models.CharField(max_length=50)),
-                ("fecha_trueque", models.DateField()),
-                ("prod_enviado", models.CharField(max_length=50)),
-                ("prod_recibido", models.CharField(max_length=50)),
-            ],
-            options={
-                "db_table": "orden_trueque",
-                "managed": False,
-            },
-        ),
-        migrations.CreateModel(
             name="Pago",
             fields=[
                 ("id_pago", models.BigAutoField(primary_key=True, serialize=False)),

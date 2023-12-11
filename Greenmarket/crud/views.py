@@ -14,6 +14,7 @@ from django.contrib.auth import (
 
 from crud.carrito import Carrito
 from .forms import (
+    CambiarEstadoForm,
     ClienteForm,
     CustomAuthenticationForm,
     CustomUserCreationForm,
@@ -30,6 +31,7 @@ from .models import (
     CustomUser,
     Envio,
     EstadoCivil,
+    EstadoSolicitud,
     OrdenCompra,
     OrdenTrueque,
     Pago,
@@ -37,6 +39,7 @@ from .models import (
     Sexo,
     Cliente,
     Proveedor,
+    TruequeProveedor,
 )
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.hashers import make_password  # Importa make_password
@@ -63,6 +66,10 @@ def home(request):
             "tiene_perfil_proveedor": tiene_perfil_proveedor,
         },
     )
+
+
+# def blog(request):
+#     return render(request,"blog.html")
 
 
 def signout(request):
@@ -417,14 +424,12 @@ def trueque(request, proveedor_id, producto_id):
         direccion_proveedor_actual = obtener_direccion_proveedor_actual(request)
         fecha_actual = date.today()
 
-        # Obtener los productos para los campos prod_enviado y prod_recibido
-        opciones_prod_enviado = Producto.objects.filter(id_proveedor=proveedor_actual)
-
-        opciones_prod_recibido = Producto.objects.filter(
-            id_proveedor=proveedor_seleccionado
+        opciones_prod_enviado = Producto.objects.filter(
+            id_proveedor=proveedor_actual_id
         )
-        print(opciones_prod_enviado)
-        print(opciones_prod_recibido)
+        opciones_prod_recibido = Producto.objects.filter(
+            id_proveedor=proveedor_seleccionado.id_proveedor
+        )
 
         if request.method == "POST":
             form = TruequeForm(request.POST)
@@ -435,17 +440,10 @@ def trueque(request, proveedor_id, producto_id):
                 orden_trueque.itrueque = proveedor_actual_id
                 orden_trueque.dtrueque = proveedor_seleccionado.id_proveedor
                 orden_trueque.fecha_trueque = fecha_actual
-                orden_trueque.prod_enviado = int(request.POST.get("prod_enviado"))
-                orden_trueque.prod_recibido = int(request.POST.get("prod_recibido"))
-
-                logger.info(
-                    "Datos del formulario antes de guardar: %s", form.cleaned_data
-                )
-
                 orden_trueque.save()
-                logger.info("¡Formulario guardado exitosamente!")
-
                 return redirect("home")
+            else:
+                print(form.errors)
         else:
             form = TruequeForm(
                 initial={
@@ -458,8 +456,92 @@ def trueque(request, proveedor_id, producto_id):
             )
             form.fields["prod_enviado"].queryset = opciones_prod_enviado
             form.fields["prod_recibido"].queryset = opciones_prod_recibido
-            print(request.POST)
     else:
         form = TruequeForm()
 
     return render(request, "trueque.html", {"form": form})
+
+
+# solicitudes
+def mis_solicitudes(request):
+    proveedor_actual = obtener_proveedor_actual(request)
+
+    if proveedor_actual:
+        solicitudes = OrdenTrueque.objects.filter(
+            itrueque=proveedor_actual.id_proveedor
+        )
+        proveedores_solicitud = {}
+
+        for solicitud in solicitudes:
+            try:
+                proveedor_solicitud = Proveedor.objects.get(
+                    id_proveedor=solicitud.dtrueque
+                )
+                proveedores_solicitud[solicitud.id_otrueque] = proveedor_solicitud
+            except Proveedor.DoesNotExist:
+                # Manejar el caso en el que no se encuentra un proveedor para la solicitud
+                # Puedes omitir esta solicitud o manejarlo de acuerdo a tu lógica
+                pass
+
+        return render(
+            request,
+            "mis_solicitudes.html",
+            {
+                "solicitudes": solicitudes,
+                "proveedores_solicitud": proveedores_solicitud,
+            },
+        )
+    else:
+        # Manejar el caso en el que no hay un proveedor actual
+        # Puedes redirigir al usuario a otra página o mostrar un mensaje de error
+        return render(request, "registro.html")
+
+
+def solicitudes_recibidas(request):
+    proveedor_actual = obtener_proveedor_actual(request)
+
+    if proveedor_actual:
+        solicitudes_recibidas = OrdenTrueque.objects.filter(
+            dtrueque=proveedor_actual.id_proveedor
+        )
+        proveedores_solicitud = {}
+
+        for solicitud in solicitudes_recibidas:
+            proveedor_solicitud = Proveedor.objects.get(id_proveedor=solicitud.itrueque)
+            proveedores_solicitud[solicitud.id_otrueque] = proveedor_solicitud
+
+        return render(
+            request,
+            "solicitudes_recibidas.html",
+            {
+                "solicitudes_recibidas": solicitudes_recibidas,
+                "proveedores_solicitud": proveedores_solicitud,
+            },
+        )
+
+
+from django.http import JsonResponse
+
+
+def cambiar_estado_solicitud(request, solicitud_id):
+    if request.method == "POST" and request.is_ajax():
+        solicitud = get_object_or_404(OrdenTrueque, pk=solicitud_id)
+        estado_actual = EstadoSolicitud.objects.get(solicitud=solicitud)
+
+        # Cambiar el estado de Pendiente a Aceptado
+        if estado_actual.estado == EstadoSolicitud.PENDIENTE:
+            estado_actual.estado = EstadoSolicitud.ACEPTADO
+            estado_actual.save()
+
+            return JsonResponse({"message": "Estado cambiado a Aceptado correctamente"})
+
+        # Cambiar el estado a Rechazado si no está Aceptado
+        elif estado_actual.estado != EstadoSolicitud.ACEPTADO:
+            estado_actual.estado = EstadoSolicitud.RECHAZADO
+            estado_actual.save()
+
+            return JsonResponse(
+                {"message": "Estado cambiado a Rechazado correctamente"}
+            )
+
+    return JsonResponse({}, status=400)

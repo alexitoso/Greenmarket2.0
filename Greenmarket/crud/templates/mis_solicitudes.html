@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Mis Solicitudes</title>
+</head>
+
+<body>
+    <h1>Mis Solicitudes</h1>
+    {% if solicitudes %}
+    <ul>
+        {% for solicitud in solicitudes %}
+        <li>
+            <p>Producto enviado: {{ solicitud.prod_enviado }}, cantidad: {{solicitud.cant_enviada}}</p>
+            <p>Producto solicitado: {{ solicitud.prod_recibido}}, cantidad: {{solicitud.cant_recibida}}</p>
+            <p>Fecha solicitud: {{ solicitud.fecha_trueque }}</p>
+            <!-- Mostrar otros detalles según tu modelo -->
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No hay solicitudes</p>
+    {% endif %}
+</body>
+
+</html>

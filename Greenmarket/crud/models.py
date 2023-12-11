@@ -231,24 +231,6 @@ class OrdenCompra(models.Model):
         db_table = "orden_compra"
 
 
-class OrdenTrueque(models.Model):
-    id_otrueque = models.BigAutoField(primary_key=True)
-    origen = models.CharField(max_length=50)
-    destino = models.CharField(max_length=50)
-    descripcion = models.CharField(max_length=50)
-    cant_recibida = models.BigIntegerField()
-    cant_enviada = models.BigIntegerField()
-    itrueque = models.CharField(max_length=50)
-    dtrueque = models.CharField(max_length=50)
-    fecha_trueque = models.DateField()
-    prod_enviado = models.BigIntegerField()
-    prod_recibido = models.BigIntegerField()
-
-    class Meta:
-        managed = False
-        db_table = "orden_trueque"
-
-
 class Pago(models.Model):
     id_pago = models.BigAutoField(primary_key=True)
     descripcion = models.CharField(max_length=50)
@@ -304,6 +286,37 @@ class Producto(models.Model):
     class Meta:
         managed = False
         db_table = "producto"
+
+    def __str__(self):
+        return self.nombre
+
+
+class OrdenTrueque(models.Model):
+    id_otrueque = models.BigAutoField(primary_key=True)
+    origen = models.CharField(max_length=50)
+    destino = models.CharField(max_length=50)
+    descripcion = models.CharField(max_length=50)
+    cant_recibida = models.BigIntegerField()
+    cant_enviada = models.BigIntegerField()
+    itrueque = models.BigIntegerField()
+    dtrueque = models.BigIntegerField()
+    fecha_trueque = models.CharField(max_length=50)
+    prod_enviado = models.ForeignKey(
+        Producto,
+        models.DO_NOTHING,
+        db_column="prod_enviado_id",
+        related_name="prod_enviado",
+    )
+    prod_recibido = models.ForeignKey(
+        Producto,
+        models.DO_NOTHING,
+        db_column="prod_recibido_id",
+        related_name="prod_recibido",
+    )
+
+    class Meta:
+        managed = False
+        db_table = "orden_trueque"
 
 
 class Region(models.Model):
@@ -376,3 +389,18 @@ class CustomUser(AbstractUser):
 
     class Meta:
         db_table = "usuario"  # Nombre de la tabla en la base de datos
+
+
+class EstadoSolicitud(models.Model):
+    PENDIENTE = "P"
+    ACEPTADO = "A"
+    RECHAZADO = "R"
+
+    ESTADO_CHOICES = [
+        (PENDIENTE, "Pendiente"),
+        (ACEPTADO, "Aceptado"),
+        (RECHAZADO, "Rechazado"),
+    ]
+
+    solicitud = models.ForeignKey(OrdenTrueque, on_delete=models.CASCADE)
+    estado = models.CharField(max_length=1, choices=ESTADO_CHOICES)

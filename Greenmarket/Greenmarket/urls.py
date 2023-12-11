@@ -82,6 +82,17 @@ urlpatterns = [
     path(
         "trueque/<int:proveedor_id>/<int:producto_id>/", views.trueque, name="trueque"
     ),
+    path("mis-solicitudes/", views.mis_solicitudes, name="mis_solicitudes"),
+    path(
+        "solicitudes-recibidas/",
+        views.solicitudes_recibidas,  # type: ignore
+        name="solicitudes_recibidas",
+    ),  # type: ignore
+    path(
+        "cambiar_estado/<int:solicitud_id>/",
+        views.cambiar_estado_solicitud,
+        name="cambiar_estado",
+    ),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
