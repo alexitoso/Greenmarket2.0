@@ -23,7 +23,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", views.home, name="home"),
+    path("", views.blog, name="blog"),
+    path("home/", views.home, name="home"),
     path("registro/", views.registro, name="registro"),
     path("iniciosesion/", views.iniciosesion, name="iniciosesion"),
     # tienda para proveedores
@@ -88,11 +89,42 @@ urlpatterns = [
         views.solicitudes_recibidas,  # type: ignore
         name="solicitudes_recibidas",
     ),  # type: ignore
+    # URL para aceptar una solicitud de trueque específica
     path(
-        "cambiar_estado/<int:solicitud_id>/",
-        views.cambiar_estado_solicitud,
-        name="cambiar_estado",
+        "aceptar-solicitud/<int:solicitud_id>/",
+        views.aceptar_solicitud,
+        name="aceptar_solicitud",
     ),
+    # URL para rechazar una solicitud de trueque específica
+    path(
+        "rechazar-solicitud/<int:solicitud_id>/",
+        views.rechazar_solicitud,
+        name="rechazar_solicitud",
+    ),
+    path("boleta/<int:id_orden>/", views.boleta, name="boleta"),
+    path(
+        "historial/",
+        views.historial,
+        name="historial",
+    ),
+    # transbank
+    # URL para iniciar la transacción
+    #     path("iniciar_transaccion/", views.iniciar_transaccion, name="iniciar_transaccion"),
+    #     # URL para recibir el resultado de la transacción desde Webpay
+    #     path(
+    #         "resultado_transaccion/",
+    #         views.resultado_transaccion,
+    #         name="resultado_transaccion",
+    #     ),
+    #     # URL para mostrar el comprobante al tarjetahabiente
+    #     path("mostrar_comprobante/", views.mostrar_comprobante, name="mostrar_comprobante"),
+    #     # URL para mostrar el comprobante o página de éxito al usuario
+    #     path("comprobante_exitoso/", views.comprobante_exitoso, name="comprobante_exitoso"),
+    #     #     path(
+    #     #         "error",
+    #     #         views.error_view,
+    #     #         name="error",
+    #     #     ),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

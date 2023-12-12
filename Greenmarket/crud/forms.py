@@ -146,34 +146,6 @@ class OrdenCompraForm(forms.ModelForm):
         }
 
 
-# class TruequeForm(forms.ModelForm):
-#     def __init__(
-#         self, *args, proveedor_actual_id=None, proveedor_seleccionado=None, **kwargs
-#     ):
-#         super(TruequeForm, self).__init__(*args, **kwargs)
-#         if proveedor_actual_id is not None and proveedor_seleccionado is not None:
-#             # Filtrar productos para prod_enviado y prod_recibido según los proveedores
-#             opciones_prod_enviado = Producto.objects.filter(
-#                 id_proveedor=proveedor_actual_id
-#             )
-#             opciones_prod_recibido = Producto.objects.filter(
-#                 id_proveedor=proveedor_seleccionado.id_proveedor
-#             )
-
-#             self.fields["prod_enviado"].queryset = opciones_prod_enviado
-#             self.fields["prod_recibido"].queryset = opciones_prod_recibido
-
-#     def clean(self):
-#         cleaned_data = super().clean()
-#         prod_enviado = cleaned_data.get("prod_enviado")
-#         prod_recibido = cleaned_data.get("prod_recibido")
-
-#         # Verificar si se ha seleccionado al menos uno de los productos
-#         if prod_enviado is None and prod_recibido is None:
-#             raise forms.ValidationError("Selecciona al menos un producto.")
-
-
-#         return cleaned_data
 class TruequeForm(forms.ModelForm):
     class Meta:
         model = OrdenTrueque
@@ -188,6 +160,7 @@ class TruequeForm(forms.ModelForm):
             "fecha_trueque",  # fecha al momento de hacer la solicitud
             "prod_enviado",  # el id del producto que se envia a cambio del solicitado
             "prod_recibido",  # el producto solicitado que quiere el solicitante
+            "id_esolicitud",  # estado de la solicitud por defecto es pendiente una vez resuelta se cambia
         ]
         widgets = {
             "origen": forms.TextInput(attrs={"readonly": "readonly"}),
@@ -197,10 +170,12 @@ class TruequeForm(forms.ModelForm):
             "fecha_trueque": forms.TextInput(attrs={"readonly": "readonly"}),
             "prod_enviado": forms.Select(),
             "prod_recibido": forms.Select(),
+            "id_esolicitud": forms.TextInput(attrs={"readonly": "readonly"}),
         }
 
-
-class CambiarEstadoForm(forms.ModelForm):
-    class Meta:
-        model = EstadoSolicitud
-        fields = ["estado"]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Consulta el objeto del estado por defecto (por ejemplo, 'Pendiente')
+        estado_default = EstadoSolicitud.objects.get(descripcion="pendiente")
+        # Establece el valor por defecto del campo ForeignKey en el formulario
+        self.fields["id_esolicitud"].initial = estado_default

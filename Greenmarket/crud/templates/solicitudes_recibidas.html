@@ -3,58 +3,43 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Solicitudes Recibidas</title>
+    <title>Solicitudes de Trueque</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <a href="/">home</a>
 </head>
 
 <body>
-    <h1>Solicitudes Recibidas</h1>
+    <h1>Solicitudes de Trueque</h1>
 
     {% if solicitudes_recibidas %}
     <ul>
         {% for solicitud in solicitudes_recibidas %}
         <li>
-            <p>Producto que te ofrecen: {{ solicitud.prod_enviado }}</p>
-            <p>Cantidad que ofrecen del producto: {{ solicitud.cant_enviada }}</p>
-            <p>Producto que te solicitan: {{ solicitud.prod_recibido }}</p>
-            <p>Cantidad que solicitan del producto: {{ solicitud.cant_recibida }}</p>
+            <p>Producto enviado: {{ solicitud.prod_enviado.nombre }}</p>
+            <p>Cantidad enviada: {{ solicitud.cant_enviada }}</p>
+            <p>Producto recibido: {{ solicitud.prod_recibido.nombre }}</p>
+            <p>Cantidad recibida: {{ solicitud.cant_recibida }}</p>
             <p>Descripción: {{ solicitud.descripcion }}</p>
+            <p>Estado solicitud: {{ solicitud.id_esolicitud }}</p>
 
-            <!-- Agregar un botón para cambiar el estado de la solicitud -->
-            <button class="cambiar-estado" data-solicitud-id="{{ solicitud.id }}">Cambiar Estado</button>
+            {% csrf_token %}
+            <form method="POST" action="{% url 'aceptar_solicitud' solicitud.id_otrueque %}">
+                {% csrf_token %}
+                <input type="hidden" name="id_esolicitud" value="1"> <!-- Valor predeterminado para aceptar -->
+                <button type="submit">Aceptar</button>
+            </form>
+
+            <form method="POST" action="{% url 'rechazar_solicitud' solicitud.id_otrueque %}">
+                {% csrf_token %}
+                <input type="hidden" name="id_esolicitud" value="2"> <!-- Valor predeterminado para rechazar -->
+                <button type="submit">Rechazar</button>
+            </form>
         </li>
         {% endfor %}
     </ul>
     {% else %}
-    <p>No hay solicitudes recibidas.</p>
+    <p>No hay solicitudes de trueque.</p>
     {% endif %}
-
-    <script>
-        // Script para manejar el cambio de estado con Ajax
-        $(document).ready(function () {
-            $('.cambiar-estado').click(function () {
-                var solicitudId = $(this).data('solicitud-id');
-
-                // Realizar la solicitud Ajax
-                $.ajax({
-                    type: 'POST',
-                    url: '/cambiar_estado/' + solicitudId + '/',  // URL para cambiar el estado
-                    data: {
-                        // Puedes enviar más datos si los necesitas para cambiar el estado
-                    },
-                    success: function (response) {
-                        // Manejar la respuesta del servidor
-                        alert('Estado de la solicitud cambiado correctamente');
-                        // Puedes hacer más cosas aquí según la respuesta del servidor
-                    },
-                    error: function (error) {
-                        // Manejar errores
-                        alert('Hubo un error al cambiar el estado de la solicitud');
-                    }
-                });
-            });
-        });
-    </script>
 </body>
 
 </html>

@@ -11,5 +11,5 @@
         <option value="{{ pago.pk }}">{{ pago.nombre }}</option>
         {% endfor %}
     </select>
-    <button type="submit">Confirmar compra</button>
+    <button href="{% url 'boleta' %}" type="submit">Confirmar compra</button>
 </form>

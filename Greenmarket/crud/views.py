@@ -1,8 +1,12 @@
 from datetime import date
 from decimal import ROUND_HALF_UP, Decimal
+import re
+from urllib import request
 from venv import logger
+from django.conf import settings
 from django.contrib import messages
 from django.db import IntegrityError
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.shortcuts import render
 from django.contrib.auth import (
@@ -13,8 +17,8 @@ from django.contrib.auth import (
 )
 
 from crud.carrito import Carrito
+
 from .forms import (
-    CambiarEstadoForm,
     ClienteForm,
     CustomAuthenticationForm,
     CustomUserCreationForm,
@@ -52,6 +56,11 @@ from django.shortcuts import render, redirect
 from .forms import CustomUserCreationForm
 
 
+# pagina inicial
+def blog(request):
+    return render(request, "blog.html")
+
+
 # Create your views here.
 @login_required
 def home(request):
@@ -72,18 +81,46 @@ def home(request):
 #     return render(request,"blog.html")
 
 
+@login_required
 def signout(request):
     logout(request)
     # Redirigir a la página de inicio u otra página después de cerrar sesión
     return redirect("home")
 
 
+def contiene_caracteres_especiales(password):
+    # Patrón que busca caracteres especiales en la contraseña
+    patron = r"[~`!@#$%^&*()_-+=\[\]{}|\\:;\"'<>,.?/]"
+    return bool(re.search(patron, password))
+
+
 def registro(request):
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
+            username = form.cleaned_data["username"]
             password = form.cleaned_data["password1"]
             password_confirmation = form.cleaned_data["password2"]
+
+            # Validación personalizada de longitud para el nombre de usuario y contraseña
+            if len(username) > 20:
+                form.add_error(
+                    "username",
+                    "El nombre de usuario debe tener como máximo 20 caracteres.",
+                )
+                return render(request, "registro.html", {"form": form})
+            if len(password) > 15:
+                form.add_error(
+                    "password2", "La contraseña debe tener como máximo 15 caracteres."
+                )
+                return render(request, "registro.html", {"form": form})
+
+            if not contiene_caracteres_especiales(password):
+                form.add_error(
+                    "password2",
+                    "La contraseña debe contener al menos un carácter especial.",
+                )
+                return render(request, "registro.html", {"form": form})
 
             if password != password_confirmation:
                 form.add_error("password2", "Las contraseñas no coinciden.")
@@ -120,6 +157,7 @@ def iniciosesion(request):
 # cliente
 
 
+@login_required
 @never_cache
 def crear_perfil_cliente(request):
     if request.method == "POST" and request.user.is_authenticated:
@@ -141,6 +179,7 @@ def crear_perfil_cliente(request):
     return render(request, "crearperfilC.html", {"form": form})
 
 
+@login_required
 def editar_perfil_cliente(request):
     perfil_cliente = get_object_or_404(Cliente, id_usuario=request.user)
 
@@ -161,6 +200,7 @@ def editar_perfil_cliente(request):
 # proveedor
 
 
+@login_required
 @never_cache
 def crear_perfil_proveedor(request):
     if request.method == "POST" and request.user.is_authenticated:
@@ -176,6 +216,7 @@ def crear_perfil_proveedor(request):
     return render(request, "crearperfilP.html", {"form": form})
 
 
+@login_required
 def editar_perfil_proveedor(request):
     perfil_proveedor = get_object_or_404(Proveedor, id_usuario=request.user)
 
@@ -194,6 +235,7 @@ def editar_perfil_proveedor(request):
 
 
 # crud de productos como proveedor
+@login_required
 def listar_productos(request):
     usuario_actual = request.user
 
@@ -210,6 +252,7 @@ def listar_productos(request):
     return render(request, "listarproductos.html", {"productos": productos})
 
 
+@login_required
 def crear_producto(request):
     if request.method == "POST":
         form = ProductoForm(request.POST, request.FILES)
@@ -225,6 +268,7 @@ def crear_producto(request):
     return render(request, "crear_producto.html", {"form": form})
 
 
+@login_required
 def editar_producto(request, producto_id):
     producto = get_object_or_404(Producto, id_producto=producto_id)
     if request.method == "POST":
@@ -237,6 +281,7 @@ def editar_producto(request, producto_id):
     return render(request, "editar_producto.html", {"form": form})
 
 
+@login_required
 def eliminar_producto(request, producto_id):
     producto = get_object_or_404(Producto, id_producto=producto_id)
     if request.method == "POST":
@@ -248,6 +293,7 @@ def eliminar_producto(request, producto_id):
 # mostrar productos en la tienda como cliente
 
 
+@login_required
 def mostrar_productos(request):
     proveedores_con_productos = Proveedor.objects.filter(
         producto__isnull=False
@@ -256,6 +302,7 @@ def mostrar_productos(request):
 
 
 # MOSTRAR PRODUCTOS EN LA TIENDA PARA PROVEEDORES
+@login_required
 def mostrar_productosP(request):
     usuario_actual = request.user
     proveedor_usuario_actual = get_object_or_404(
@@ -272,16 +319,15 @@ def mostrar_productosP(request):
     return render(request, "tiendaP.html", {"proveedores": proveedores_con_productos})
 
 
-# <!-- {% url 'solicitud_trueque' producto.id_producto %} agregar al html cuando funcione el boton
-
-
 # detalle producto como cliente
+@login_required
 def detalle_producto(request, producto_id):
     producto = Producto.objects.get(id_producto=producto_id)
     return render(request, "detalleproducto.html", {"producto": producto})
 
 
 # carro
+@login_required
 def agregar_carro(request, producto_id):
     carrito = Carrito(request)
     producto = Producto.objects.get(id_producto=producto_id)
@@ -289,6 +335,7 @@ def agregar_carro(request, producto_id):
     return redirect("carro")
 
 
+@login_required
 def eliminar_carro(request, producto_id):
     carrito = Carrito(request)
     producto = Producto.objects.get(id_producto=producto_id)
@@ -296,6 +343,7 @@ def eliminar_carro(request, producto_id):
     return redirect("carro")
 
 
+@login_required
 def restar_carro(request, producto_id):
     carrito = Carrito(request)
     producto = Producto.objects.get(id_producto=producto_id)
@@ -303,6 +351,7 @@ def restar_carro(request, producto_id):
     return redirect("carro")
 
 
+@login_required
 def limpiar_carrito(request):
     carrito = Carrito(request)
     carrito.limpiar()
@@ -312,6 +361,7 @@ def limpiar_carrito(request):
 # orden de compra
 
 
+@login_required
 def confirmar_compra(request):
     # Obtener datos del carrito desde la sesión
     carrito = request.session.get("carrito", {})
@@ -359,9 +409,7 @@ def confirmar_compra(request):
             nueva_orden.save()
 
             # Redirigir al usuario a la pasarela de pago de Transbank
-            return redirect(
-                "https://webpay3gint.transbank.cl/"
-            )  # Redirige al host de Transbank
+            return redirect("boleta")  # Redirige al host de Transbank
     else:
         form = OrdenCompraForm(
             initial={
@@ -414,6 +462,7 @@ def obtener_proveedor_actual(request):
 
 
 # trueque
+@login_required
 def trueque(request, proveedor_id, producto_id):
     proveedor_actual = obtener_proveedor_actual(request)
     if proveedor_actual:
@@ -440,11 +489,17 @@ def trueque(request, proveedor_id, producto_id):
                 orden_trueque.itrueque = proveedor_actual_id
                 orden_trueque.dtrueque = proveedor_seleccionado.id_proveedor
                 orden_trueque.fecha_trueque = fecha_actual
+                if "id_esolicitud" not in form.cleaned_data:
+                    estado_default = EstadoSolicitud.objects.get(
+                        descripcion="Pendiente"
+                    )
+                    form.cleaned_data["id_esolicitud"] = estado_default
                 orden_trueque.save()
                 return redirect("home")
             else:
                 print(form.errors)
         else:
+            estado_default = EstadoSolicitud.objects.get(descripcion="pendiente")
             form = TruequeForm(
                 initial={
                     "origen": direccion_proveedor_actual,
@@ -452,6 +507,7 @@ def trueque(request, proveedor_id, producto_id):
                     "itrueque": proveedor_actual_id,
                     "dtrueque": proveedor_seleccionado.id_proveedor,
                     "fecha_trueque": fecha_actual,
+                    "id_esolicitud": estado_default,
                 }
             )
             form.fields["prod_enviado"].queryset = opciones_prod_enviado
@@ -463,6 +519,7 @@ def trueque(request, proveedor_id, producto_id):
 
 
 # solicitudes
+@login_required
 def mis_solicitudes(request):
     proveedor_actual = obtener_proveedor_actual(request)
 
@@ -497,6 +554,7 @@ def mis_solicitudes(request):
         return render(request, "registro.html")
 
 
+@login_required
 def solicitudes_recibidas(request):
     proveedor_actual = obtener_proveedor_actual(request)
 
@@ -518,30 +576,233 @@ def solicitudes_recibidas(request):
                 "proveedores_solicitud": proveedores_solicitud,
             },
         )
+    else:
+        return HttpResponse("Error: Proveedor no encontrado o no definido")
 
 
-from django.http import JsonResponse
+@login_required
+def aceptar_solicitud(request, solicitud_id):
+    solicitud = get_object_or_404(OrdenTrueque, id_otrueque=solicitud_id)
+
+    producto_enviado = solicitud.prod_enviado
+    producto_recibido = solicitud.prod_recibido
+
+    if (
+        producto_enviado.stock >= solicitud.cant_enviada
+        and producto_recibido.stock >= solicitud.cant_recibida
+    ):
+        producto_enviado.stock -= solicitud.cant_enviada
+        producto_recibido.stock -= solicitud.cant_recibida
+
+        producto_enviado.save()
+        producto_recibido.save()
+
+        # Obtener el estado 'aceptado' desde la base de datos
+        estado_aceptado = EstadoSolicitud.objects.get(descripcion="aceptado")
+
+        # Cambiar el estado de la solicitud a 'aceptado'
+        solicitud.id_esolicitud = estado_aceptado
+        solicitud.save()
+
+        return redirect("listar_productos")
+    else:
+        return redirect("home")
 
 
-def cambiar_estado_solicitud(request, solicitud_id):
-    if request.method == "POST" and request.is_ajax():
-        solicitud = get_object_or_404(OrdenTrueque, pk=solicitud_id)
-        estado_actual = EstadoSolicitud.objects.get(solicitud=solicitud)
+@login_required
+def rechazar_solicitud(request, solicitud_id):
+    solicitud = get_object_or_404(OrdenTrueque, id_otrueque=solicitud_id)
 
-        # Cambiar el estado de Pendiente a Aceptado
-        if estado_actual.estado == EstadoSolicitud.PENDIENTE:
-            estado_actual.estado = EstadoSolicitud.ACEPTADO
-            estado_actual.save()
+    # Obtener el estado 'rechazado' desde la base de datos
+    estado_rechazado = EstadoSolicitud.objects.get(descripcion="rechazado")
 
-            return JsonResponse({"message": "Estado cambiado a Aceptado correctamente"})
+    # Cambiar el estado de la solicitud a 'rechazado'
+    solicitud.id_esolicitud = estado_rechazado
+    solicitud.save()
 
-        # Cambiar el estado a Rechazado si no está Aceptado
-        elif estado_actual.estado != EstadoSolicitud.ACEPTADO:
-            estado_actual.estado = EstadoSolicitud.RECHAZADO
-            estado_actual.save()
+    return redirect("home")
 
-            return JsonResponse(
-                {"message": "Estado cambiado a Rechazado correctamente"}
-            )
 
-    return JsonResponse({}, status=400)
+# Para integrar Webpay en Python puedes utilizar la Referencia API, alguna librería externa o libwebpay
+
+# import transbank.webpay.webpay_plus as wplus
+# from transbank.webpay.webpay_plus import transaction
+# from transbank import webpay
+
+
+# def generar_transaccion_webpay(request, orden_compra_id):
+#     commerce_code = settings.TRANSBANK_WEBPAY_PLUS_DEFAULT_COMMERCE_CODE
+#     api_key = settings.TRANSBANK_WEBPAY_PLUS_DEFAULT_API_KEY
+#     integration_type = settings.TRANSBANK_WEBPAY_PLUS_DEFAULT_INTEGRATION_TYPE
+#     endpoint = settings.TRANSBANK_WEBPAY_PLUS_ENDPOINT
+
+#     options = options.Options(
+#         commerce_code=commerce_code,
+#         api_key=api_key,
+#         integration_type=integration_type,
+#         environment=endpoint
+#     )
+#     # Instancia un objeto de tipo 'transbank.configuration.Configuration'
+#     config = transbank.configuration.Configuration(commerce_code, api_key, integration_type, endpoint)
+
+#     # Utiliza el objeto 'config' en lugar del diccionario 'configuration'
+#     webpay.configuration.configure(config)
+#     transaccion = webpay.WebpayPlusTransaction.create(orden_compra = get_object_or_404(OrdenCompra, id_compra=orden_compra_id)
+#     valor_total = orden_compra.valor_total
+#     amount = valor_total
+#     session_id = (
+#         request.session.session_key
+#         if request.session.session_key
+#         else "sin-session-key"
+#     )
+#     buy_order = orden_compra.id_compra
+#     return_url = "https://callback/resultado/de/transaccion"
+#     final_url = "https://callback/final/post/comprobante/webpay")
+
+#     # Lógica para utilizar 'transaccion' en tu aplicación
+#     # Por ejemplo, puedes retornar la URL de redirección para el pago
+#     url_pago = transaccion.init_point
+
+#     # Devuelve la URL de redirección al frontend o realiza alguna acción necesaria
+#     return HttpResponse(url_pago)
+
+
+# def iniciar_transaccion(request, orden_compra_id):
+#     orden_compra = get_object_or_404(OrdenCompra, id_compra=orden_compra_id)
+#     valor_total = orden_compra.valor_total
+#     amount = valor_total
+#     session_id = (
+#         request.session.session_key
+#         if request.session.session_key
+#         else "sin-session-key"
+#     )
+#     buy_order = orden_compra.id_compra
+#     return_url = "https://callback/resultado/de/transaccion"
+#     final_url = "https://callback/final/post/comprobante/webpay"
+
+#     configuracion = Webpay.Configuration.for_testing_webpay_plus_normal()
+#     transaccion = Webpay.Webpay(configuracion).get_normal_transaction()
+
+#     try:
+#         response = transaccion.init_transaction(
+#             amount, buy_order, session_id, return_url, final_url
+#         )
+#         token = response.token
+#         url = response.url
+
+#         # Crea el formulario con el campo token_ws oculto
+#         form_html = f"""
+#             <form id="webpayForm" action="{url}" method="post">
+#                 <input type="hidden" name="token_ws" value="{token}">
+#             </form>
+#             <script>
+#                 document.getElementById('webpayForm').submit();
+#             </script>
+#         """
+
+#         # Retorna el formulario para enviar la solicitud de pago a Webpay
+#         return HttpResponse(form_html)
+
+#     except Exception as e:
+#         # Manejo de errores
+#         print(str(e))
+#         return HttpResponse("Ocurrió un error al iniciar la transacción.")
+
+
+# def resultado_transaccion(request):
+#     # Obtener el token_ws desde el parámetro recibido por POST
+#     token = request.POST.get("token_ws")
+
+#     configuracion = Webpay.Configuration.for_testing_webpay_plus_normal()
+#     transaccion = Webpay.Webpay(configuracion).get_normal_transaction()
+
+#     try:
+#         # Obtener el resultado de la transacción utilizando el token recibido
+#         response = transaccion.get_transaction_result(token)
+#         output = response.detail_output[0]
+
+#         if output.response_code == 0:
+#             # La transacción se ha realizado correctamente
+#             # Aquí puedes realizar acciones correspondientes al éxito de la transacción
+#             return HttpResponse("Transacción exitosa")
+#         else:
+#             # Manejar otros posibles códigos de respuesta según tu lógica de negocio
+#             return HttpResponse("Transacción fallida")
+
+#     except Exception as e:
+#         # Manejo de errores
+#         print(str(e))
+#         return HttpResponse("Error al procesar la transacción")
+
+
+# def mostrar_comprobante(request):
+#     # Obtener el token_ws desde el parámetro recibido por POST
+#     token = request.POST.get("token_ws")
+
+#     configuracion = Webpay.Configuration.for_testing_webpay_plus_normal()
+#     transaccion = Webpay.Webpay(configuracion).get_normal_transaction()
+
+#     try:
+#         # Obtener la URL de redirección para mostrar el comprobante al tarjetahabiente
+#         result = transaccion.get_result(token)
+#         url_redireccion = result.get_url_redirection()
+
+#         # Crear formulario con el token_ws para redirigir al tarjetahabiente al comprobante en Webpay
+#         form_html = f"""
+#             <form id="webpayForm" action="{url_redireccion}" method="post">
+#                 <input type="hidden" name="token_ws" value="{token}">
+#             </form>
+#             <script>
+#                 document.getElementById('webpayForm').submit();
+#             </script>
+#         """
+
+#         # Mostrar el formulario para redirigir al tarjetahabiente al comprobante
+#         return HttpResponse(form_html)
+
+#     except Exception as e:
+#         # Manejo de errores
+#         print(str(e))
+#         return HttpResponse("Error al mostrar el comprobante")
+
+
+# def comprobante_exitoso(request):
+#     return render(request, "comprobante_exitoso.html")
+
+
+# listar historial de compra por usuario
+@login_required
+def historial(request):
+    # Obtiene el usuario actual
+    usuario_actual = request.user
+
+    # Obtiene el ID del usuario actual a través de CustomUser
+    id_usuario_actual = usuario_actual.id_usuario
+
+    # Obtiene el cliente correspondiente al usuario actual
+    cliente_usuario_actual = Cliente.objects.get(id_usuario=id_usuario_actual)
+
+    # Obtiene solo el ID del cliente
+    id_cliente_actual = cliente_usuario_actual.id_cliente
+
+    # Obtener el historial de compras del cliente actual usando el ID del cliente
+    historial_compras = OrdenCompra.objects.filter(id_cliente=id_cliente_actual)
+
+    ids_proveedores = historial_compras.values_list(
+        "id_proveedor", flat=True
+    ).distinct()
+
+    # Crear un diccionario que mapee IDs de proveedores a sus nombres de tienda
+    nombres_tiendas = {}
+    for id_proveedor in ids_proveedores:
+        proveedor = Proveedor.objects.get(id_proveedor=id_proveedor)
+        nombres_tiendas[id_proveedor] = proveedor.nombre_tienda
+    # Renderizar la plantilla con el historial de compras
+    return render(request, "historial.html", {"historial_compras": historial_compras})
+
+
+@login_required
+def boleta(request, id_orden):
+    # Obtener la orden de compra por su ID
+    orden = OrdenCompra.objects.get(id_compra=id_orden)
+    return render(request, "boleta.html", {"orden": orden})

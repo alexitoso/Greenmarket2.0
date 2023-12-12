@@ -1,0 +1,81 @@
+*{
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.fondo{
+    background-color: #c7ddef;
+}
+
+.section-padding{
+    padding: 30px;
+}
+
+.carousel-item{
+    height: 80vh;
+    min-height: 300px;
+}
+
+.carousel-caption{
+    z-index: 2;
+    background-color: darkseagreen;
+}
+
+.carousel-caption h5{
+    font-size: 45px;
+    letter-spacing: 2px;
+}
+
+.carousel-caption p{
+    width: 60%;
+    margin: auto;
+    font-size: 18px;
+    line-height: 1.9;
+}
+
+footer{
+    background-color: darkseagreen;
+    color: white;
+    padding: 20px;
+    padding-left: 10%;
+    padding-right:10%;
+}
+
+.img-logo{
+    width: 200px;
+}
+
+.card{
+    margin-bottom: 10px;
+    opacity: 0.6;
+}
+
+.navbar{
+    background-color: #c9efc7;
+}
+
+.nav-item :hover{
+    background-color: yellowgreen;
+}
+
+.about-text{
+    text-align: center;
+    background-color: #c9efc7;
+    padding: 20px
+}
+
+.section-header{
+    background-color: darkseagreen;
+    padding: 20px;
+    margin-bottom: 20px;
+    color: white;
+    margin-top: 50px;
+}
+
+
+
+.formulario{
+    padding-top: 30%;
+    padding-bottom: 20%;
+    margin-right: 30%;
+    margin-left: 30%;
+}

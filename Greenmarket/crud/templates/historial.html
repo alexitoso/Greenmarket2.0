@@ -1,0 +1,43 @@
+<!-- historial.html -->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Historial de compras</title>
+</head>
+
+<body>
+    <h1>Historial de compras</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>N° de orden</th>
+                <th>Tienda proveedor</th>
+                <th>Fecha de Compra</th>
+                <th>Cantidad</th>
+                <th>Valor Total</th>
+                <!-- Añade más columnas según los campos que quieras mostrar -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for orden in historial_compras %}
+            <tr>
+                <td><a href="{% url 'boleta' orden.id_compra %}">{{ orden.id_compra }}</a></td>
+                <td>{{ orden.id_proveedor }}</td>
+                <td>{{ orden.fecha_compra }}</td>
+                <td>{{ orden.cant_compra }}</td>
+                <td>{{ orden.valor_total }}</td>
+                <!-- Ajusta los nombres de los campos según tu modelo -->
+                <!-- Agrega más columnas si es necesario -->
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No hay historial de compras disponible</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
+</html>
