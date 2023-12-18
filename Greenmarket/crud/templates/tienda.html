@@ -1,5 +1,4 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -7,30 +6,105 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil de Proveedor</title>
-    <a href="javascript:history.back()">Volver atrás</a>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        a {
+            display: inline-block;
+            margin-bottom: 10px;
+            padding: 5px 10px;
+            background-color: #3f8f71;
+            color: #2bb45f;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        a:hover {
+            background-color: #357764;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        h2 {
+            margin-top: 30px;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+            color: #333;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        li a {
+            color: #000000;
+            text-decoration: none;
+        }
+
+        li a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Tiendas con Productos</h1>
-    <ul>
-        {% for proveedor in proveedores %}
-        <!-- Detalles del proveedor -->
-        <h2>{{ proveedor.nombre_tienda }}</h2>
-        <!-- Listado de productos -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-success">
+        <div class="container" style="color: #2bb45f;">
+            <a class="navbar-brand" href="#">
+                <img src="{% static 'img/gmlogo-largo1.png' %}" width="150" alt="">
+            </a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a href="{% url 'home' %}">home</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1>Tiendas con Productos</h1>
         <ul>
-            {% for producto in proveedor.producto_set.all %}
-            <li>
-                <a href="{% url 'detalleproducto' producto.id_producto %}">
-                    {{ producto.nombre }} - Precio: {{ producto.precio }}
-                </a>
-            </li>
+            {% for proveedor in proveedores %}
+            <!-- Detalles del proveedor -->
+            <h2>{{ proveedor.nombre_tienda }}</h2>
+            <!-- Listado de productos -->
+            <ul>
+                {% for producto in proveedor.producto_set.all %}
+                <li>
+                    <a href="{% url 'detalleproducto' producto.id_producto %}">
+                        {{ producto.nombre }} - Precio: {{ producto.precio }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
             {% endfor %}
         </ul>
-        {% endfor %}
-    </ul>
+    </div>
+
     {% include "carrito.html" %}
 
+    <script src="{% static 'js/logout_timer.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
 </body>
-<script src="{% static 'js/logout_timer.js' %}"></script>
 
 </html>

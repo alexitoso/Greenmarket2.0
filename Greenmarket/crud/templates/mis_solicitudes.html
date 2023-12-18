@@ -1,12 +1,64 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 
 <head>
     <title>Mis Solicitudes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            margin: 5px 0;
+        }
+
+        p:first-child {
+            font-weight: bold;
+        }
+
+        p:nth-child(odd) {
+            color: #555;
+        }
+
+        p:nth-child(even) {
+            color: #2bb45f;
+        }
+
+        p:last-child {
+            font-style: italic;
+        }
+
+        p::before {
+            content: "• ";
+        }
+    </style>
 </head>
 
 <body>
     <h1>Mis Solicitudes</h1>
+    <a href="{% url 'home' %}">home</a>
     {% if solicitudes %}
     <ul>
         {% for solicitud in solicitudes %}
@@ -23,5 +75,6 @@
     <p>No hay solicitudes</p>
     {% endif %}
 </body>
+<script src="{% static 'js/logout_timer.js' %}"></script>
 
 </html>

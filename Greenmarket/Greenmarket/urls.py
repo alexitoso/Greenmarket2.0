@@ -26,7 +26,7 @@ urlpatterns = [
     path("", views.blog, name="blog"),
     path("home/", views.home, name="home"),
     path("registro/", views.registro, name="registro"),
-    path("iniciosesion/", views.iniciosesion, name="iniciosesion"),
+    path("home/iniciosesion/", views.iniciosesion, name="iniciosesion"),
     # tienda para proveedores
     path("tiendaP/", views.mostrar_productosP, name="tiendaP"),
     # cerrar sesion
@@ -107,6 +107,7 @@ urlpatterns = [
         views.historial,
         name="historial",
     ),
+    path("pago/", views.pago, name="pago"),
     # transbank
     # URL para iniciar la transacción
     #     path("iniciar_transaccion/", views.iniciar_transaccion, name="iniciar_transaccion"),

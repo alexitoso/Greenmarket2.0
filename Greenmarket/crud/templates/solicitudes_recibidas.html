@@ -4,12 +4,61 @@
 <head>
     <meta charset="UTF-8">
     <title>Solicitudes de Trueque</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <a href="/">home</a>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            margin: 5px 0;
+        }
+
+        button {
+            padding: 8px 16px;
+            margin-top: 10px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button.accept {
+            background-color: #2bb45f;
+            color: white;
+            margin-right: 10px;
+        }
+
+        button.reject {
+            background-color: #e74c3c;
+            color: white;
+        }
+    </style>
 </head>
 
 <body>
     <h1>Solicitudes de Trueque</h1>
+    <a href="{% url 'home' %}">home</a>
 
     {% if solicitudes_recibidas %}
     <ul>
@@ -22,17 +71,16 @@
             <p>Descripción: {{ solicitud.descripcion }}</p>
             <p>Estado solicitud: {{ solicitud.id_esolicitud }}</p>
 
-            {% csrf_token %}
             <form method="POST" action="{% url 'aceptar_solicitud' solicitud.id_otrueque %}">
                 {% csrf_token %}
                 <input type="hidden" name="id_esolicitud" value="1"> <!-- Valor predeterminado para aceptar -->
-                <button type="submit">Aceptar</button>
+                <button type="submit" class="accept">Aceptar</button>
             </form>
 
             <form method="POST" action="{% url 'rechazar_solicitud' solicitud.id_otrueque %}">
                 {% csrf_token %}
                 <input type="hidden" name="id_esolicitud" value="2"> <!-- Valor predeterminado para rechazar -->
-                <button type="submit">Rechazar</button>
+                <button type="submit" class="reject">Rechazar</button>
             </form>
         </li>
         {% endfor %}

@@ -62,6 +62,7 @@ def blog(request):
 
 
 # Create your views here.
+@never_cache
 @login_required
 def home(request):
     tiene_perfil_cliente = Cliente.objects.filter(id_usuario=request.user).exists()
@@ -81,17 +82,12 @@ def home(request):
 #     return render(request,"blog.html")
 
 
+@never_cache
 @login_required
 def signout(request):
     logout(request)
     # Redirigir a la página de inicio u otra página después de cerrar sesión
     return redirect("home")
-
-
-def contiene_caracteres_especiales(password):
-    # Patrón que busca caracteres especiales en la contraseña
-    patron = r"[~`!@#$%^&*()_-+=\[\]{}|\\:;\"'<>,.?/]"
-    return bool(re.search(patron, password))
 
 
 def registro(request):
@@ -112,13 +108,6 @@ def registro(request):
             if len(password) > 15:
                 form.add_error(
                     "password2", "La contraseña debe tener como máximo 15 caracteres."
-                )
-                return render(request, "registro.html", {"form": form})
-
-            if not contiene_caracteres_especiales(password):
-                form.add_error(
-                    "password2",
-                    "La contraseña debe contener al menos un carácter especial.",
                 )
                 return render(request, "registro.html", {"form": form})
 
@@ -179,6 +168,7 @@ def crear_perfil_cliente(request):
     return render(request, "crearperfilC.html", {"form": form})
 
 
+@never_cache
 @login_required
 def editar_perfil_cliente(request):
     perfil_cliente = get_object_or_404(Cliente, id_usuario=request.user)
@@ -216,6 +206,7 @@ def crear_perfil_proveedor(request):
     return render(request, "crearperfilP.html", {"form": form})
 
 
+@never_cache
 @login_required
 def editar_perfil_proveedor(request):
     perfil_proveedor = get_object_or_404(Proveedor, id_usuario=request.user)
@@ -235,6 +226,7 @@ def editar_perfil_proveedor(request):
 
 
 # crud de productos como proveedor
+@never_cache
 @login_required
 def listar_productos(request):
     usuario_actual = request.user
@@ -252,6 +244,7 @@ def listar_productos(request):
     return render(request, "listarproductos.html", {"productos": productos})
 
 
+@never_cache
 @login_required
 def crear_producto(request):
     if request.method == "POST":
@@ -268,6 +261,7 @@ def crear_producto(request):
     return render(request, "crear_producto.html", {"form": form})
 
 
+@never_cache
 @login_required
 def editar_producto(request, producto_id):
     producto = get_object_or_404(Producto, id_producto=producto_id)
@@ -281,6 +275,7 @@ def editar_producto(request, producto_id):
     return render(request, "editar_producto.html", {"form": form})
 
 
+@never_cache
 @login_required
 def eliminar_producto(request, producto_id):
     producto = get_object_or_404(Producto, id_producto=producto_id)
@@ -293,6 +288,7 @@ def eliminar_producto(request, producto_id):
 # mostrar productos en la tienda como cliente
 
 
+@never_cache
 @login_required
 def mostrar_productos(request):
     proveedores_con_productos = Proveedor.objects.filter(
@@ -302,6 +298,7 @@ def mostrar_productos(request):
 
 
 # MOSTRAR PRODUCTOS EN LA TIENDA PARA PROVEEDORES
+@never_cache
 @login_required
 def mostrar_productosP(request):
     usuario_actual = request.user
@@ -320,6 +317,7 @@ def mostrar_productosP(request):
 
 
 # detalle producto como cliente
+@never_cache
 @login_required
 def detalle_producto(request, producto_id):
     producto = Producto.objects.get(id_producto=producto_id)
@@ -327,6 +325,7 @@ def detalle_producto(request, producto_id):
 
 
 # carro
+@never_cache
 @login_required
 def agregar_carro(request, producto_id):
     carrito = Carrito(request)
@@ -336,6 +335,7 @@ def agregar_carro(request, producto_id):
 
 
 @login_required
+@never_cache
 def eliminar_carro(request, producto_id):
     carrito = Carrito(request)
     producto = Producto.objects.get(id_producto=producto_id)
@@ -344,6 +344,7 @@ def eliminar_carro(request, producto_id):
 
 
 @login_required
+@never_cache
 def restar_carro(request, producto_id):
     carrito = Carrito(request)
     producto = Producto.objects.get(id_producto=producto_id)
@@ -352,6 +353,7 @@ def restar_carro(request, producto_id):
 
 
 @login_required
+@never_cache
 def limpiar_carrito(request):
     carrito = Carrito(request)
     carrito.limpiar()
@@ -362,6 +364,7 @@ def limpiar_carrito(request):
 
 
 @login_required
+@never_cache
 def confirmar_compra(request):
     # Obtener datos del carrito desde la sesión
     carrito = request.session.get("carrito", {})
@@ -375,7 +378,6 @@ def confirmar_compra(request):
     iva = Decimal("0.19") * valor_neto
     iva = round(iva, 2)
     valor_total = valor_neto + iva
-    valor_total = str(valor_total) if valor_total % 1 > 0 else str(int(valor_total))
 
     # Obtener el ID del cliente desde la sesión
     id_cliente = request.user.cliente_set.first().id_cliente
@@ -409,7 +411,7 @@ def confirmar_compra(request):
             nueva_orden.save()
 
             # Redirigir al usuario a la pasarela de pago de Transbank
-            return redirect("boleta")  # Redirige al host de Transbank
+            return redirect("pago")  # Redirige al host de Transbank
     else:
         form = OrdenCompraForm(
             initial={
@@ -428,6 +430,8 @@ def confirmar_compra(request):
 
 
 # obtener datos
+
+
 def obtener_direccion_proveedor_actual(request):
     # Verificar si el usuario está autenticado
     if request.user.is_authenticated:
@@ -462,6 +466,7 @@ def obtener_proveedor_actual(request):
 
 
 # trueque
+@never_cache
 @login_required
 def trueque(request, proveedor_id, producto_id):
     proveedor_actual = obtener_proveedor_actual(request)
@@ -520,6 +525,7 @@ def trueque(request, proveedor_id, producto_id):
 
 # solicitudes
 @login_required
+@never_cache
 def mis_solicitudes(request):
     proveedor_actual = obtener_proveedor_actual(request)
 
@@ -555,6 +561,7 @@ def mis_solicitudes(request):
 
 
 @login_required
+@never_cache
 def solicitudes_recibidas(request):
     proveedor_actual = obtener_proveedor_actual(request)
 
@@ -581,6 +588,7 @@ def solicitudes_recibidas(request):
 
 
 @login_required
+@never_cache
 def aceptar_solicitud(request, solicitud_id):
     solicitud = get_object_or_404(OrdenTrueque, id_otrueque=solicitud_id)
 
@@ -610,6 +618,7 @@ def aceptar_solicitud(request, solicitud_id):
 
 
 @login_required
+@never_cache
 def rechazar_solicitud(request, solicitud_id):
     solicitud = get_object_or_404(OrdenTrueque, id_otrueque=solicitud_id)
 
@@ -772,6 +781,7 @@ def rechazar_solicitud(request, solicitud_id):
 
 # listar historial de compra por usuario
 @login_required
+@never_cache
 def historial(request):
     # Obtiene el usuario actual
     usuario_actual = request.user
@@ -802,7 +812,12 @@ def historial(request):
 
 
 @login_required
+@never_cache
 def boleta(request, id_orden):
     # Obtener la orden de compra por su ID
     orden = OrdenCompra.objects.get(id_compra=id_orden)
     return render(request, "boleta.html", {"orden": orden})
+
+
+def pago(request):
+    return render(request, "pago.html")

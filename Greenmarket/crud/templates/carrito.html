@@ -1,9 +1,7 @@
 <div class="alert alert-primary" role="alert">
+    <h4 class="text-center mb-4">CARRITO</h4>
     <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th scope="row" colspan="3" class="tex-center">CARRITO</th>
-            </tr>
+        <thead class="table-dark">
             <tr>
                 <th scope="col">NOMBRE</th>
                 <th scope="col">PRECIO</th>
@@ -11,33 +9,41 @@
             </tr>
         </thead>
         <tbody>
-            {% if request.session.carrito.items %}
-            {% for key, value in request.session.carrito.items %}
-            <tr>
-                <td>{{value.nombre}}</td>
-                <td>{{value.precio}}</td>
-                <td>{{value.acumulado}}
-                    <a href="{% url 'agregar' value.producto_id %}" class="badge btn btn-dark badge-dark">+</a>
-                    <a href="{% url 'restar' value.producto_id %}" class="badge btn btn-dark badge-dark">-</a>
-                </td>
-            </tr>
+            <div>
+                {% if request.session.carrito.items %}
+                {% for key, value in request.session.carrito.items %}
+                <tr>
+                    <td>{{ value.nombre }}</td>
+                    <td>${{ value.precio }}</td>
+                    <td>
+                        {{ value.acumulado }}
+                        <a href="{% url 'agregar' value.producto_id %}" class="btn btn-dark btn-sm ms-1">+</a>
+                        <a href="{% url 'restar' value.producto_id %}" class="btn btn-dark btn-sm ms-1">-</a>
+                    </td>
+                </tr>
+            </div>
             {% endfor %}
             {% else %}
             <tr>
-                <td colspan="3">
-                    <div class="alet alert-danger text center">Sin Productos</div>
+                <td colspan="3" class="text-center">
+                    <div class="alert alert-danger">Sin Productos</div>
                 </td>
             </tr>
             {% endif %}
-            <tr>
+            <tr class="table-secondary">
                 <th scope="row">Total:</th>
-                <th colspan="2">${{total_carrito}}</th>
+                <td colspan="2">${{ total_carrito }}</td>
             </tr>
         </tbody>
     </table>
     <hr>
 </div>
-<div class="row" text center>
-    <div class="col-6"><a href="{% url 'limpiar' %}" class="btn btn-danger">Limpiar</a></div>
-    <div class="col-6"><a href="{% url 'orden' %}" class="btn btn-success">Guardar</a></div>
+<div class="row text-center mt-4">
+    <div class="col-6">
+        <a href="{% url 'limpiar' %}" class="btn btn-danger">Limpiar</a>
+    </div>
+    <div class="col-6">
+        <a href="{% url 'orden' %}" class="btn btn-success">Guardar</a>
+    </div>
+
 </div>

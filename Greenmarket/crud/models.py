@@ -5,7 +5,6 @@
 #   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
-from django import forms
 from django.db import models
 
 
@@ -257,12 +256,10 @@ class Proveedor(models.Model):
 
 class OrdenCompra(models.Model):
     id_compra = models.BigAutoField(primary_key=True)
-    id_proveedor = models.ForeignKey(
-        "Proveedor", models.DO_NOTHING, db_column="id_proveedor"
-    )
+    id_proveedor = models.BigIntegerField()
     id_envio = models.ForeignKey("Envio", models.DO_NOTHING, db_column="id_envio")
     id_pago = models.ForeignKey("Pago", models.DO_NOTHING, db_column="id_pago")
-    id_cliente = models.ForeignKey("Cliente", models.DO_NOTHING, db_column="id_cliente")
+    id_cliente = models.BigIntegerField()
     fecha_compra = models.CharField(max_length=50)
     cant_compra = models.BigIntegerField()
     valor_total = models.BigIntegerField()
@@ -272,62 +269,6 @@ class OrdenCompra(models.Model):
     class Meta:
         managed = False
         db_table = "orden_compra"
-
-    def obtener_cliente(self):
-        return (
-            self.id_cliente
-        )  # Devuelve el objeto Cliente asociado a esta orden de compra
-
-    def obtener_proveedor(self):
-        return (
-            self.id_proveedor
-        )  # Devuelve el objeto Proveedor asociado a esta orden de compra
-
-    def obtener_datos_cliente(self):
-        cliente = self.obtener_cliente()
-        if cliente:
-            return {
-                "id_cliente": cliente.orden_compra.id_cliente,
-                "id_sexo": cliente.orden_compra.id_sexo.id_sexo,
-                "id_estado": cliente.orden_compra.id_estado.id_estado,
-                "id_comuna": cliente.orden_compra.id_comuna.id_comuna,
-                "rut_cliente": cliente.orden_compra.rut_cliente,
-                "dv_cliente": cliente.orden_compra.dv_cliente,
-                "pnombre": cliente.orden_compra.pnombre,
-                "snombre": cliente.orden_compra.snombre,
-                "apellidom": cliente.orden_compra.apellidom,
-                "apellidop": cliente.orden_compra.apellidop,
-                "telefono": cliente.orden_compra.telefono,
-                "edad": cliente.orden_compra.edad,
-                "direccion": cliente.orden_compra.direccion,
-                "correo": cliente.orden_compra.correo,
-                "id_usuario": cliente.orden_compra.id_usuario.id_usuario,
-            }
-        return None  # Manejo si no se encuentra el cliente asociado a la orden
-
-    def obtener_datos_proveedor(self):
-        proveedor = self.obtener_proveedor()
-        if proveedor:
-            return {
-                "id_proveedor": proveedor.orden_compra.id_proveedor,
-                "rut_proveedor": proveedor.orden_compra.rut_proveedor,
-                "dv_proveedor": proveedor.orden_compra.dv_proveedor,
-                "id_comuna": proveedor.orden_compra.id_comuna.id_comuna,
-                "edad": proveedor.orden_compra.edad,
-                "nombre_proveedor": proveedor.orden_compra.nombre_proveedor,
-                "apellidom": proveedor.orden_compra.apellidom,
-                "apellidop": proveedor.orden_compra.apellidop,
-                "direccion": proveedor.orden_compra.direccion,
-                "nombre_tienda": proveedor.orden_compra.nombre_tienda,
-                "descripcion": proveedor.orden_compra.descripcion,
-                "telefono": proveedor.orden_compra.telefono,
-                "id_estado": proveedor.orden_compra.id_estado.id_estado,
-                "id_sexo": proveedor.orden_compra.id_sexo.id_sexo,
-                "correo": proveedor.orden_compra.correo,
-                "id_usuario": proveedor.orden_compra.id_usuario.id_usuario,
-                # Agrega otros campos que desees obtener del proveedor
-            }
-        return None  # Manejo si no se encuentra el proveedor asociado a la orden
 
 
 class Producto(models.Model):
@@ -463,29 +404,3 @@ class CustomUser(AbstractUser):
 
     class Meta:
         db_table = "usuario"  # Nombre de la tabla en la base de datos
-
-
-class CustomUserCreationForm(forms.ModelForm):
-    # Definir campos personalizados con las etiquetas y mensajes de ayuda modificados
-    username = forms.CharField(
-        label="Nombre de usuario",
-        max_length=20,
-        help_text="20 caracteres como máximo. Únicamente letras, dígitos y @/./+/-/_",
-    )
-    password1 = forms.CharField(
-        label="Contraseña",
-        strip=False,
-        widget=forms.PasswordInput,
-        help_text="Su contraseña debe contener al menos 8 caracteres."
-        "Su contraseña no puede asemejarse tanto a su otra información personal."
-        "Su contraseña no puede ser una clave utilizada comúnmente."
-        "Su contraseña no puede ser completamente numérica.",
-    )
-
-    class Meta:
-        model = CustomUser
-        fields = [
-            "username",
-            "password1",
-            "tipo_perfil",
-        ]  # Lista de campos del formulario

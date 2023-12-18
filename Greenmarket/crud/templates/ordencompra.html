@@ -1,15 +1,120 @@
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <select name="id_envio">
-        {% for envio in envios %}
-        <option value="{{ envio.pk }}">{{ envio.nombre }}</option>
-        {% endfor %}
-    </select>
-    <select name="id_pago">
-        {% for pago in pagos %}
-        <option value="{{ pago.pk }}">{{ pago.nombre }}</option>
-        {% endfor %}
-    </select>
-    <button href="{% url 'boleta' %}" type="submit">Confirmar compra</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle compra</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2edd63;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            width: 400px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .btn-primary {
+            padding: 10px 20px;
+            background-color: #2bb45f;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #238e4d;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <form method="post" class="my-4 p-4 bg-succes border rounded shadow-sm">
+            {% csrf_token %}
+            <h2 class="mb-4">Detalles de la compra</h2>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="cant_compra" class="form-label">Cantidad de productos comprados:</label>
+                    {{ form.cant_compra }}
+                </div>
+                <div class="col-md-6">
+                    <label for="valor_neto" class="form-label">Valor neto:</label>
+                    {{ form.valor_neto }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="iva" class="form-label">IVA:</label>
+                    {{ form.iva }}
+                </div>
+                <div class="col-md-6">
+                    <label for="valor_total" class="form-label">Valor Total de la compra:</label>
+                    {{ form.valor_total }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="id_cliente" class="form-label">Cliente:</label>
+                    {{ form.id_cliente }}
+                </div>
+                <div class="col-md-6">
+                    <label for="id_proveedor" class="form-label">Proveedor:</label>
+                    {{ form.id_proveedor }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="fecha_compra" class="form-label">Fecha de compra:</label>
+                    {{ form.fecha_compra }}
+                </div>
+                <div class="col-md-6">
+                    <label for="id_envio" class="form-label">Tipo envío:</label>
+                    {{ form.id_envio }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="id_pago" class="form-label">Método de pago:</label>
+                    {{ form.id_pago }}
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Confirmar compra</button>
+        </form>
+</body>
+
+</html>

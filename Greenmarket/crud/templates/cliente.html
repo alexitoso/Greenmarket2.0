@@ -7,17 +7,103 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>perfil {{request.user.tipo_perfil}}</title>
+    <title>Perfil {{ request.user.tipo_perfil }}</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            color: #333;
+        }
+
+        form {
+            width: 50%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #3f8f71;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #357764;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #3f8f71;
+            text-decoration: none;
+        }
+    </style>
 </head>
 
 <body>
     <h1>Perfil del Cliente</h1>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        <div class="row">
+            <div class="col-md-3">
+                <label for="id_sexo">sexo: {{form.id_sexo}}</label> <!-- Resto de los campos -->
+            </div>
+            <div>
+                <label for="id_estado">Estado civil: {{form.id_estado}}</label>
+            </div>
+            <div>
+                <label for="id_comuna">Comuna: {{form.id_comuna}}</label>
+            </div>
+            <div>
+                <label for="id_rut">Rut cliente: {{form.rut_cliente}} - {{form.dv_cliente}}</label>
+            </div>
+            <div>
+                <label for="pnombre">Primer nombre: {{form.pnombre}}</label>
+            </div>
+            <div>
+                <label for="snombre">Segundo nombre: {{form.snombre}}</label>
+            </div>
+            <div>
+                <label for="apellidop">Apellido paterno: {{form.apellidop}}</label>
+            </div>
+            <div>
+                <label for="apellidom">Apellido materno: {{form.apellidom}}</label>
+            </div>
+            <div>
+                <label for="telefono">Teléfono: {{form.telefono}}</label>
+            </div>
+            <div>
+                <label for="direccion">Dirección: {{form.direccion}}</label>
+            </div>
+            <div>
+                <label for="edad">Edad : {{form.edad}}</label>
+            </div>
+            <div>
+                <label for="correo">Correo electrónico: {{form.correo}}</label>
+            </div>
+
+
+        </div>
         <input type="submit" value="Guardar">
-
-
-        <a href="/">Inicio</a>
-        <script src="{% static 'js/logout_timer.js' %}"></script>
+    </form>
+    <a href="{% url 'home' %}">Inicio</a>
+    <script src="{% static 'js/logout_timer.js' %}"></script>
 </body>
+
+</html>

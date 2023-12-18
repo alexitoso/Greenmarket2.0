@@ -6,11 +6,72 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Listado de Productos</title>
-    <a href="javascript:history.back()">Volver atrás</a>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #fff;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        li a {
+            color: #2bb45f;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        li form {
+            display: inline;
+            margin-left: 10px;
+        }
+
+        li form input[type="submit"] {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        a.btn-primary {
+            display: block;
+            width: fit-content;
+            padding: 10px 20px;
+            background-color: #2bb45f;
+            color: #fff;
+            text-decoration: none;
+            text-align: center;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+    </style>
 </head>
+
 
 <body>
     <h1>Listado de Productos</h1>
+    <a href="{% url 'home' %}">home</a>
     <ul>
         {% for producto in productos %}
         <li>
@@ -23,9 +84,8 @@
         </li>
         {% endfor %}
     </ul>
-    <a href="{% url 'crear_producto' %}">Agregar Producto</a>
+    <a href="{% url 'crear_producto' %}" class="btn-primary">Agregar Producto</a>
     <script src="{% static 'js/logout_timer.js' %}"></script>
 </body>
-
 
 </html>

@@ -5,10 +5,41 @@
 <head>
     <meta charset="UTF-8">
     <title>Historial de compras</title>
+    <style>
+        /* Estilo del navbar */
+        nav {
+            background-color: #2bb45f;
+            padding: 10px;
+            color: white;
+            text-align: center;
+        }
+
+        /* Estilo para la tabla */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Historial de compras</h1>
+    <!-- Navbar -->
+    <nav>
+        <h1>Historial de compras</h1>
+        <a href="{% url 'home' %}">home</a>
+    </nav>
+
     <table>
         <thead>
             <tr>

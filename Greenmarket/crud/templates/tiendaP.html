@@ -7,37 +7,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil de Proveedor</title>
-    <a href="javascript:history.back()">Volver atrás</a>
-    <a href="/">home</a>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #fff;
+        }
+
+        h2 {
+            margin: 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #ccc;
+            color: #2bb45f;
+        }
+
+        a {
+            text-decoration: none;
+            color: #2bb45f;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+
+    <a href="{% url 'home' %}">home</a>
 </head>
 
 <body>
     <h1>Tiendas con Productos</h1>
     <ul>
         {% for proveedor in proveedores %}
-        <!-- Verificar si el proveedor es diferente al usuario actual -->
         {% if proveedor.id_proveedor != usuario_actual.proveedor.id_proveedor %}
-        <!-- Detalles del proveedor -->
-        <h2>{{ proveedor.nombre_tienda }}</h2>
-        <!-- Listado de productos -->
-        <ul>
-            {% for producto in proveedor.producto_set.all %}
-            <li>
-                <a href="{% url 'detalleproducto' producto.id_producto %}">
-                    {{ producto.nombre }} - Precio: {{ producto.precio }}
-                </a>
-            </li>
-            <li>
-                <a href="/trueque/{{ proveedor.id_proveedor }}/{{ producto.id_producto }}/">
-                    Solicitar trueque
-                </a>
-            </li>
-            {% endfor %}
-        </ul>
+        <li>
+            <h2>{{ proveedor.nombre_tienda }}</h2>
+            <ul>
+                {% for producto in proveedor.producto_set.all %}
+                <li>
+                    <a href="{% url 'detalleproducto' producto.id_producto %}">
+                        {{ producto.nombre }} - Precio: {{ producto.precio }}
+                    </a>
+                </li>
+                <li>
+                    <a href="/trueque/{{ proveedor.id_proveedor }}/{{ producto.id_producto }}/">
+                        Solicitar trueque
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </li>
         {% endif %}
         {% endfor %}
     </ul>
+    <script src="{% static 'js/logout_timer.js' %}"></script>
 </body>
-<script src="{% static 'js/logout_timer.js' %}"></script>
 
 </html>
